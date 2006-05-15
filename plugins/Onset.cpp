@@ -31,7 +31,8 @@ Onset::Onset(float inputSampleRate) :
     m_onsetdet(0),
     m_onsettype(aubio_onset_mkl),
     m_threshold(0.3),
-    m_silence(-90)
+    m_silence(-90),
+    m_channelCount(1)
 {
 }
 
@@ -215,6 +216,17 @@ Onset::getOutputDescriptors() const
     d.sampleType = OutputDescriptor::OneSamplePerStep;
     list.push_back(d);
 
+    d = OutputDescriptor();
+    d.name = "detectionfunction";
+    d.unit = "";
+    d.description = "Onset Detection Function";
+    d.hasFixedBinCount = true;
+    d.binCount = m_channelCount;
+    d.hasKnownExtents = false;
+    d.isQuantized = false;
+    d.sampleType = OutputDescriptor::OneSamplePerStep;
+    list.push_back(d);
+
     return list;
 }
 
@@ -243,6 +255,11 @@ Onset::process(float **inputBuffers, Vamp::RealTime /* timestamp */)
     if (isonset) {
         returnFeatures[0].push_back(Feature());
     }
+    Feature feature;
+    for (size_t j = 0; j < m_channelCount; ++j) {
+        feature.values.push_back(m_onset->data[j][0]);
+    }
+    returnFeatures[1].push_back(feature);
 
     return returnFeatures;
 }
