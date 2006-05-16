@@ -14,6 +14,7 @@
 
 */
 
+#include <math.h>
 #include "Pitch.h"
 
 using std::string;
@@ -25,7 +26,7 @@ Pitch::Pitch(float inputSampleRate) :
     Plugin(inputSampleRate),
     m_ibuf(0),
     m_pitchdet(0),
-    m_pitchtype(aubio_pitch_fcomb),
+    m_pitchtype(aubio_pitch_yinfft),
     m_pitchmode(aubio_pitchm_freq)
 {
 }
@@ -75,7 +76,7 @@ Pitch::initialise(size_t channels, size_t stepSize, size_t blockSize)
 
     m_ibuf = new_fvec(stepSize, channels);
 
-    m_pitchdet = new_aubio_pitchdetection(blockSize * 4,
+    m_pitchdet = new_aubio_pitchdetection(blockSize,
                                           stepSize,
                                           channels,
                                           lrintf(m_inputSampleRate),
@@ -99,7 +100,7 @@ Pitch::getPreferredStepSize() const
 size_t
 Pitch::getPreferredBlockSize() const
 {
-    return 1024;
+    return 2048;
 }
 
 Pitch::ParameterList
@@ -112,7 +113,7 @@ Pitch::getParameterDescriptors() const
     desc.description = "Pitch Detection Function Type";
     desc.minValue = 0;
     desc.maxValue = 4;
-    desc.defaultValue = (int)aubio_pitch_fcomb;
+    desc.defaultValue = (int)aubio_pitch_yinfft;
     desc.isQuantized = true;
     desc.quantizeStep = 1;
     desc.valueNames.push_back("YIN Frequency Estimator");

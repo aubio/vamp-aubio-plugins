@@ -14,6 +14,7 @@
 
 */
 
+#include <math.h>
 #include "Onset.h"
 
 using std::string;
@@ -29,7 +30,7 @@ Onset::Onset(float inputSampleRate) :
     m_pv(0),
     m_peakpick(0),
     m_onsetdet(0),
-    m_onsettype(aubio_onset_mkl),
+    m_onsettype(aubio_onset_complex),
     m_threshold(0.3),
     m_silence(-90),
     m_channelCount(1)
@@ -83,21 +84,13 @@ Onset::initialise(size_t channels, size_t stepSize, size_t blockSize)
     m_stepSize = stepSize;
     m_blockSize = blockSize;
 
-    size_t processingBlockSize;
-    if (m_onsettype == aubio_onset_energy ||
-        m_onsettype == aubio_onset_hfc) {
-        processingBlockSize = stepSize * 2;
-    } else {
-        processingBlockSize = stepSize * 4;
-    }
-
     m_ibuf = new_fvec(stepSize, channels);
     m_onset = new_fvec(1, channels);
-    m_fftgrain = new_cvec(processingBlockSize, channels);
-    m_pv = new_aubio_pvoc(processingBlockSize, stepSize, channels);
+    m_fftgrain = new_cvec(blockSize, channels);
+    m_pv = new_aubio_pvoc(blockSize, stepSize, channels);
     m_peakpick = new_aubio_peakpicker(m_threshold);
 
-    m_onsetdet = new_aubio_onsetdetection(m_onsettype, processingBlockSize, channels);
+    m_onsetdet = new_aubio_onsetdetection(m_onsettype, blockSize, channels);
 
     return true;
 }
@@ -110,18 +103,13 @@ Onset::reset()
 size_t
 Onset::getPreferredStepSize() const
 {
-    if (m_onsettype == aubio_onset_energy ||
-        m_onsettype == aubio_onset_hfc) {
-        return 512;
-    } else {
-        return 128;
-    }
+    return 512;
 }
 
 size_t
 Onset::getPreferredBlockSize() const
 {
-    return getPreferredStepSize();
+    return 2*getPreferredStepSize();
 }
 
 Onset::ParameterList
@@ -134,7 +122,7 @@ Onset::getParameterDescriptors() const
     desc.description = "Onset Detection Function Type";
     desc.minValue = 0;
     desc.maxValue = 6;
-    desc.defaultValue = (int)aubio_onset_mkl;
+    desc.defaultValue = (int)aubio_onset_complex;
     desc.isQuantized = true;
     desc.quantizeStep = 1;
     desc.valueNames.push_back("Energy Based");
@@ -253,7 +241,9 @@ Onset::process(float **inputBuffers, Vamp::RealTime /* timestamp */)
     FeatureSet returnFeatures;
 
     if (isonset) {
-        returnFeatures[0].push_back(Feature());
+        Feature onsettime;
+        onsettime.hasTimestamp = false;
+        returnFeatures[0].push_back(onsettime);
     }
     Feature feature;
     for (size_t j = 0; j < m_channelCount; ++j) {

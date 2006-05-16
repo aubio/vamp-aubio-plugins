@@ -14,6 +14,7 @@
 
 */
 
+#include <math.h>
 #include "Notes.h"
 
 using std::string;
@@ -29,9 +30,9 @@ Notes::Notes(float inputSampleRate) :
     m_pv(0),
     m_peakpick(0),
     m_onsetdet(0),
-    m_onsettype(aubio_onset_mkl),
+    m_onsettype(aubio_onset_complex),
     m_pitchdet(0),
-    m_pitchtype(aubio_pitch_fcomb),
+    m_pitchtype(aubio_pitch_yinfft),
     m_pitchmode(aubio_pitchm_freq),
     m_threshold(0.3),
     m_silence(-90),
@@ -125,18 +126,13 @@ Notes::reset()
 size_t
 Notes::getPreferredStepSize() const
 {
-    if (m_onsettype == aubio_onset_energy ||
-        m_onsettype == aubio_onset_hfc) {
-        return 512;
-    } else {
-        return 128;
-    }
+    return 512;
 }
 
 size_t
 Notes::getPreferredBlockSize() const
 {
-    return getPreferredStepSize();
+    return 4*getPreferredStepSize();
 }
 
 Notes::ParameterList
@@ -149,7 +145,7 @@ Notes::getParameterDescriptors() const
     desc.description = "Onset Detection Function Type";
     desc.minValue = 0;
     desc.maxValue = 6;
-    desc.defaultValue = (int)aubio_onset_mkl;
+    desc.defaultValue = (int)aubio_onset_complex;
     desc.isQuantized = true;
     desc.quantizeStep = 1;
     desc.valueNames.push_back("Energy Based");
@@ -166,7 +162,7 @@ Notes::getParameterDescriptors() const
     desc.description = "Pitch Detection Function Type";
     desc.minValue = 0;
     desc.maxValue = 4;
-    desc.defaultValue = (int)aubio_pitch_fcomb;
+    desc.defaultValue = (int)aubio_pitch_yinfft;
     desc.isQuantized = true;
     desc.quantizeStep = 1;
     desc.valueNames.push_back("YIN Frequency Estimator");
