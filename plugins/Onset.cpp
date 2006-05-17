@@ -250,6 +250,7 @@ Onset::process(float **inputBuffers, Vamp::RealTime timestamp)
         if (timestamp - m_lastOnset >= m_delay) {
             Feature onsettime;
             onsettime.hasTimestamp = true;
+            if (timestamp < m_delay) timestamp = m_delay;
             onsettime.timestamp = timestamp - m_delay;
             returnFeatures[0].push_back(onsettime);
             m_lastOnset = timestamp;

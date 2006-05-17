@@ -71,6 +71,7 @@ protected:
     size_t m_channelCount;
     std::deque<float> m_notebuf;
     size_t m_count;
+    Vamp::RealTime m_delay;
     Vamp::RealTime m_currentOnset;
     Vamp::RealTime m_lastTimeStamp;
     float m_currentLevel;
