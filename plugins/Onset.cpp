@@ -91,6 +91,11 @@ Onset::initialise(size_t channels, size_t stepSize, size_t blockSize)
     m_peakpick = new_aubio_peakpicker(m_threshold);
 
     m_onsetdet = new_aubio_onsetdetection(m_onsettype, blockSize, channels);
+    
+    m_delay = Vamp::RealTime::frame2RealTime(4 * stepSize,
+                                             lrintf(m_inputSampleRate));
+
+    m_lastOnset = Vamp::RealTime::zeroTime - m_delay - m_delay;
 
     return true;
 }
@@ -109,7 +114,7 @@ Onset::getPreferredStepSize() const
 size_t
 Onset::getPreferredBlockSize() const
 {
-    return 2*getPreferredStepSize();
+    return 2 * getPreferredStepSize();
 }
 
 Onset::ParameterList
@@ -201,7 +206,8 @@ Onset::getOutputDescriptors() const
     d.description = "Onsets";
     d.hasFixedBinCount = true;
     d.binCount = 0;
-    d.sampleType = OutputDescriptor::OneSamplePerStep;
+    d.sampleType = OutputDescriptor::VariableSampleRate;
+    d.sampleRate = 0;
     list.push_back(d);
 
     d = OutputDescriptor();
@@ -219,7 +225,7 @@ Onset::getOutputDescriptors() const
 }
 
 Onset::FeatureSet
-Onset::process(float **inputBuffers, Vamp::RealTime /* timestamp */)
+Onset::process(float **inputBuffers, Vamp::RealTime timestamp)
 {
     for (size_t i = 0; i < m_stepSize; ++i) {
         for (size_t j = 0; j < m_channelCount; ++j) {
@@ -241,9 +247,13 @@ Onset::process(float **inputBuffers, Vamp::RealTime /* timestamp */)
     FeatureSet returnFeatures;
 
     if (isonset) {
-        Feature onsettime;
-        onsettime.hasTimestamp = false;
-        returnFeatures[0].push_back(onsettime);
+        if (timestamp - m_lastOnset >= m_delay) {
+            Feature onsettime;
+            onsettime.hasTimestamp = true;
+            onsettime.timestamp = timestamp - m_delay;
+            returnFeatures[0].push_back(onsettime);
+            m_lastOnset = timestamp;
+        }
     }
     Feature feature;
     for (size_t j = 0; j < m_channelCount; ++j) {
