@@ -132,7 +132,7 @@ Notes::getPreferredStepSize() const
 size_t
 Notes::getPreferredBlockSize() const
 {
-    return 4*getPreferredStepSize();
+    return 4 * getPreferredStepSize();
 }
 
 Notes::ParameterList
@@ -324,7 +324,9 @@ Notes::pushNote(FeatureSet &fs, const Vamp::RealTime &offTime)
 
     Feature feature;
     feature.hasTimestamp = true;
-    feature.timestamp = m_currentOnset;
+    feature.timestamp = m_currentOnset -
+        Vamp::RealTime::frame2RealTime((4 + m_median) * m_stepSize,
+                                       m_inputSampleRate);
     feature.values.push_back(median);
 //    feature.values.push_back(FLOOR(aubio_freqtomidi(median) + 0.5));
     feature.values.push_back
