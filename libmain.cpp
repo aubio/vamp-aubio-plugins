@@ -20,10 +20,12 @@
 #include "plugins/Onset.h"
 #include "plugins/Pitch.h"
 #include "plugins/Notes.h"
+#include "plugins/Tempo.h"
 
 static Vamp::PluginAdapter<Onset> onsetAdapter;
 static Vamp::PluginAdapter<Pitch> pitchAdapter;
 static Vamp::PluginAdapter<Notes> notesAdapter;
+static Vamp::PluginAdapter<Tempo> tempoAdapter;
 
 const VampPluginDescriptor *vampGetPluginDescriptor(unsigned int index)
 {
@@ -31,6 +33,7 @@ const VampPluginDescriptor *vampGetPluginDescriptor(unsigned int index)
     case  0: return onsetAdapter.getDescriptor();
     case  1: return pitchAdapter.getDescriptor();
     case  2: return notesAdapter.getDescriptor();
+    case  3: return tempoAdapter.getDescriptor();
     default: return 0;
     }
 }

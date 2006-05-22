@@ -36,7 +36,12 @@ Notes::Notes(float inputSampleRate) :
     m_pitchmode(aubio_pitchm_freq),
     m_threshold(0.3),
     m_silence(-90),
-    m_median(6)
+    m_median(6),
+    m_minpitch(32),
+    m_maxpitch(95),
+    m_wrapRange(false),
+    m_avoidLeaps(false),
+    m_prevPitch(-1)
 {
 }
 
@@ -116,6 +121,7 @@ Notes::initialise(size_t channels, size_t stepSize, size_t blockSize)
                                        lrintf(m_inputSampleRate));
     m_currentOnset = Vamp::RealTime::zeroTime;
     m_haveCurrent = false;
+    m_prevPitch = -1;
 
     return true;
 }
@@ -175,6 +181,48 @@ Notes::getParameterDescriptors() const
     list.push_back(desc);
 
     desc = ParameterDescriptor();
+    desc.name = "minpitch";
+    desc.description = "Minimum Pitch";
+    desc.minValue = 0;
+    desc.maxValue = 127;
+    desc.defaultValue = 32;
+    desc.unit = "MIDI units";
+    desc.isQuantized = true;
+    desc.quantizeStep = 1;
+    list.push_back(desc);
+
+    desc = ParameterDescriptor();
+    desc.name = "maxpitch";
+    desc.description = "Maximum Pitch";
+    desc.minValue = 0;
+    desc.maxValue = 127;
+    desc.defaultValue = 95;
+    desc.unit = "MIDI units";
+    desc.isQuantized = true;
+    desc.quantizeStep = 1;
+    list.push_back(desc);
+
+    desc = ParameterDescriptor();
+    desc.name = "wraprange";
+    desc.description = "Fold Higher or Lower Notes into Range";
+    desc.minValue = 0;
+    desc.maxValue = 1;
+    desc.defaultValue = 0;
+    desc.isQuantized = true;
+    desc.quantizeStep = 1;
+    list.push_back(desc);
+
+    desc = ParameterDescriptor();
+    desc.name = "avoidleaps";
+    desc.description = "Avoid Multi-Octave Jumps";
+    desc.minValue = 0;
+    desc.maxValue = 1;
+    desc.defaultValue = 0;
+    desc.isQuantized = true;
+    desc.quantizeStep = 1;
+    list.push_back(desc);
+
+    desc = ParameterDescriptor();
     desc.name = "peakpickthreshold";
     desc.description = "Peak Picker Threshold";
     desc.minValue = 0;
@@ -207,6 +255,14 @@ Notes::getParameter(std::string param) const
         return m_threshold;
     } else if (param == "silencethreshold") {
         return m_silence;
+    } else if (param == "minpitch") {
+        return m_minpitch;
+    } else if (param == "maxpitch") {
+        return m_maxpitch;
+    } else if (param == "wraprange") {
+        return m_wrapRange ? 1.0 : 0.0;
+    } else if (param == "avoidleaps") {
+        return m_avoidLeaps ? 1.0 : 0.0;
     } else {
         return 0.0;
     }
@@ -237,6 +293,14 @@ Notes::setParameter(std::string param, float value)
         m_threshold = value;
     } else if (param == "silencethreshold") {
         m_silence = value;
+    } else if (param == "minpitch") {
+        m_minpitch = lrintf(value);
+    } else if (param == "maxpitch") {
+        m_maxpitch = lrintf(value);
+    } else if (param == "wraprange") {
+        m_wrapRange = (value > 0.5);
+    } else if (param == "avoidleaps") {
+        m_avoidLeaps = (value > 0.5);
     }
 }
 
@@ -324,12 +388,41 @@ Notes::pushNote(FeatureSet &fs, const Vamp::RealTime &offTime)
     float median = toSort[toSort.size()/2];
     if (median < 45.0) return;
 
+    float freq = median;
+    int midiPitch = (int)FLOOR(aubio_freqtomidi(freq) + 0.5);
+    
+    if (m_avoidLeaps) {
+        if (m_prevPitch >= 0) {
+            while (midiPitch < m_prevPitch - 12) {
+                midiPitch += 12;
+                freq *= 2;
+            }
+            while (midiPitch > m_prevPitch + 12) {
+                midiPitch -= 12;
+                freq /= 2;
+            }
+        }
+    }
+
+    while (midiPitch < m_minpitch) {
+        if (!m_wrapRange) return;
+        midiPitch += 12;
+        freq *= 2;
+    }
+
+    while (midiPitch > m_maxpitch) {
+        if (!m_wrapRange) return;
+        midiPitch -= 12;
+        freq /= 2;
+    }
+
+    m_prevPitch = midiPitch;
+
     Feature feature;
     feature.hasTimestamp = true;
     if (m_currentOnset < m_delay) m_currentOnset = m_delay;
     feature.timestamp = m_currentOnset - m_delay;
-    feature.values.push_back(median);
-//    feature.values.push_back(FLOOR(aubio_freqtomidi(median) + 0.5));
+    feature.values.push_back(freq);
     feature.values.push_back
         (Vamp::RealTime::realTime2Frame(offTime, lrintf(m_inputSampleRate)) -
          Vamp::RealTime::realTime2Frame(m_currentOnset, lrintf(m_inputSampleRate)));

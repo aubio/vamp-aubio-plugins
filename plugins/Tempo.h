@@ -14,19 +14,17 @@
 
 */
 
-#ifndef _NOTES_PLUGIN_H_
-#define _NOTES_PLUGIN_H_
+#ifndef _TEMPO_PLUGIN_H_
+#define _TEMPO_PLUGIN_H_
 
 #include <vamp-sdk/Plugin.h>
 #include <aubio/aubio.h>
 
-#include <deque>
-
-class Notes : public Vamp::Plugin
+class Tempo : public Vamp::Plugin
 {
 public:
-    Notes(float inputSampleRate);
-    virtual ~Notes();
+    Tempo(float inputSampleRate);
+    virtual ~Tempo();
 
     bool initialise(size_t channels, size_t stepSize, size_t blockSize);
     void reset();
@@ -60,29 +58,19 @@ protected:
     aubio_pickpeak_t *m_peakpick;
     aubio_onsetdetection_t *m_onsetdet;
     aubio_onsetdetection_type m_onsettype;
-    aubio_pitchdetection_t *m_pitchdet;
-    aubio_pitchdetection_type m_pitchtype;
-    aubio_pitchdetection_mode m_pitchmode;
+    aubio_beattracking_t *m_beattracking;
+    fvec_t *m_dfframe;
+    fvec_t *m_btout;
+    uint_t m_winlen;
+    sint_t m_btstep;
+    sint_t m_btcounter;
     float m_threshold;
     float m_silence;
-    size_t m_median;
     size_t m_stepSize;
     size_t m_blockSize;
     size_t m_channelCount;
-    int m_minpitch;
-    int m_maxpitch;
-    bool m_wrapRange;
-    bool m_avoidLeaps;
-    std::deque<float> m_notebuf;
-    size_t m_count;
     Vamp::RealTime m_delay;
-    Vamp::RealTime m_currentOnset;
-    Vamp::RealTime m_lastTimeStamp;
-    float m_currentLevel;
-    bool m_haveCurrent;
-    int m_prevPitch;
-
-    void pushNote(FeatureSet &, const Vamp::RealTime &);
+    Vamp::RealTime m_lastBeat;
 };
 
 
