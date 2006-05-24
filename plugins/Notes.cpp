@@ -37,7 +37,7 @@ Notes::Notes(float inputSampleRate) :
     m_threshold(0.3),
     m_silence(-90),
     m_median(6),
-    m_minpitch(36),
+    m_minpitch(27),
     m_maxpitch(95),
     m_wrapRange(false),
     m_avoidLeaps(false),
