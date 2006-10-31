@@ -10,13 +10,13 @@ PLUGINDIR	= plugins
 
 # Compile flags
 #
-CXXFLAGS	:= $(CXXFLAGS) -g -Wall -I$(VAMPDIR) -I.
+CXXFLAGS	:= $(CXXFLAGS) -DNDEBUG -O2 -march=pentium3 -mfpmath=sse -ffast-math -Wall -I$(VAMPDIR) -I.
 
 # Libraries required for the plugins.  Note that we can (and actively
 # want to) statically link libstdc++, because our plugin exposes only
 # a C API so there are no boundary compatibility problems.
 #
-PLUGIN_LIBS	= -L$(VAMPLIBDIR) -lvamp-sdk -laubio
+PLUGIN_LIBS	= -L$(VAMPLIBDIR) -Wl,-Bstatic -lvamp-sdk -laubio -Wl,-Bdynamic
 #PLUGIN_LIBS	= -L$(VAMPLIBDIR) -lvamp-sdk /usr/lib/libaubio.a /usr/lib/libfftw3f.a
 #PLUGIN_LIBS	= -L$(VAMPLIBDIR) -lvamp-sdk $(shell g++ -print-file-name=libstdc++.a)
 
