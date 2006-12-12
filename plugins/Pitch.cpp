@@ -170,7 +170,8 @@ Pitch::getOutputDescriptors() const
 }
 
 Pitch::FeatureSet
-Pitch::process(float **inputBuffers, Vamp::RealTime /* timestamp */)
+Pitch::process(const float *const *inputBuffers,
+               Vamp::RealTime /* timestamp */)
 {
     for (size_t i = 0; i < m_stepSize; ++i) {
         for (size_t j = 0; j < m_channelCount; ++j) {

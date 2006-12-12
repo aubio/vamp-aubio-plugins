@@ -225,7 +225,8 @@ Onset::getOutputDescriptors() const
 }
 
 Onset::FeatureSet
-Onset::process(float **inputBuffers, Vamp::RealTime timestamp)
+Onset::process(const float *const *inputBuffers,
+               Vamp::RealTime timestamp)
 {
     for (size_t i = 0; i < m_stepSize; ++i) {
         for (size_t j = 0; j < m_channelCount; ++j) {

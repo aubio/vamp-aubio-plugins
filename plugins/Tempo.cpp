@@ -22,6 +22,8 @@ using std::vector;
 using std::cerr;
 using std::endl;
 
+//#define HAVE_AUBIO_LOCKED_TEMPO_HACK
+
 Tempo::Tempo(float inputSampleRate) :
     Plugin(inputSampleRate),
     m_ibuf(0),
@@ -223,11 +225,23 @@ Tempo::getOutputDescriptors() const
     d.sampleRate = 0;
     list.push_back(d);
 
+#ifdef HAVE_AUBIO_LOCKED_TEMPO_HACK
+    d.name = "tempo";
+    d.unit = "bpm";
+    d.description = "Tempo";
+    d.hasFixedBinCount = true;
+    d.binCount = 1;
+    d.hasKnownExtents = false;
+    d.isQuantized = false;
+    d.sampleType = OutputDescriptor::OneSamplePerStep;
+    list.push_back(d);
+#endif
+
     return list;
 }
 
 Tempo::FeatureSet
-Tempo::process(float **inputBuffers, Vamp::RealTime timestamp)
+Tempo::process(const float *const *inputBuffers, Vamp::RealTime timestamp)
 {
     for (size_t i = 0; i < m_stepSize; ++i) {
         for (size_t j = 0; j < m_channelCount; ++j) {
@@ -238,8 +252,16 @@ Tempo::process(float **inputBuffers, Vamp::RealTime timestamp)
     aubio_pvoc_do(m_pv, m_ibuf, m_fftgrain);
     aubio_onsetdetection(m_onsetdet, m_fftgrain, m_onset);
 
+#ifdef HAVE_AUBIO_LOCKED_TEMPO_HACK
+    float locked_tempo = 0;
+#endif
+
     if ( m_btcounter == m_btstep - 1 ) {
+#ifdef HAVE_AUBIO_LOCKED_TEMPO_HACK
+        aubio_beattracking_do(m_beattracking,m_dfframe,m_btout,&locked_tempo);
+#else
         aubio_beattracking_do(m_beattracking,m_dfframe,m_btout);
+#endif
         /* rotate dfframe */
         for (size_t i = 0 ; i < m_winlen - m_btstep; i++ ) 
                 m_dfframe->data[0][i] = m_dfframe->data[0][i+m_btstep];
@@ -252,7 +274,6 @@ Tempo::process(float **inputBuffers, Vamp::RealTime timestamp)
     bool isonset = aubio_peakpick_pimrt_wt( m_onset, m_peakpick, 
         &(m_dfframe->data[0][m_winlen - m_btstep + m_btcounter]));
     bool istactus = 0;
-
 
     /* check if any of the predicted beat correspond to the current time */
     for (size_t i = 1; i < m_btout->data[0][0]; i++ ) { 
@@ -278,6 +299,17 @@ Tempo::process(float **inputBuffers, Vamp::RealTime timestamp)
             m_lastBeat = timestamp;
         }
     }
+
+#ifdef HAVE_AUBIO_LOCKED_TEMPO_HACK
+    if (locked_tempo >= 30 && locked_tempo <= 206) {
+        if (locked_tempo > 145) locked_tempo /= 2;
+        std::cerr << "Locked tempo: " << locked_tempo << std::endl;
+        Feature tempo;
+        tempo.hasTimestamp = false;
+        tempo.values.push_back(locked_tempo);
+        returnFeatures[1].push_back(tempo);
+    }
+#endif
 
     return returnFeatures;
 }
