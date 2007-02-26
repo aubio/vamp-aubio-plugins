@@ -38,15 +38,21 @@ Pitch::~Pitch()
 }
 
 string
-Pitch::getName() const
+Pitch::getIdentifier() const
 {
     return "aubiopitch";
 }
 
 string
-Pitch::getDescription() const
+Pitch::getName() const
 {
     return "Aubio Pitch Detector";
+}
+
+string
+Pitch::getDescription() const
+{
+    return "Track estimated note pitches";
 }
 
 string
@@ -109,8 +115,8 @@ Pitch::getParameterDescriptors() const
     ParameterList list;
     
     ParameterDescriptor desc;
-    desc.name = "pitchtype";
-    desc.description = "Pitch Detection Function Type";
+    desc.identifier = "pitchtype";
+    desc.name = "Pitch Detection Function Type";
     desc.minValue = 0;
     desc.maxValue = 4;
     desc.defaultValue = (int)aubio_pitch_yinfft;
@@ -156,9 +162,9 @@ Pitch::getOutputDescriptors() const
     OutputList list;
 
     OutputDescriptor d;
-    d.name = "frequency";
+    d.identifier = "frequency";
+    d.name = "Frequency";
     d.unit = "Hz";
-    d.description = "Frequency";
     d.hasFixedBinCount = true;
     d.binCount = 1;
     d.hasKnownExtents = false;

@@ -57,15 +57,21 @@ Notes::~Notes()
 }
 
 string
-Notes::getName() const
+Notes::getIdentifier() const
 {
     return "aubionotes";
 }
 
 string
-Notes::getDescription() const
+Notes::getName() const
 {
     return "Aubio Note Tracker";
+}
+
+string
+Notes::getDescription() const
+{
+    return "Estimate note onset positions, pitches and durations";
 }
 
 string
@@ -149,8 +155,8 @@ Notes::getParameterDescriptors() const
     ParameterList list;
     
     ParameterDescriptor desc;
-    desc.name = "onsettype";
-    desc.description = "Onset Detection Function Type";
+    desc.identifier = "onsettype";
+    desc.name = "Onset Detection Function Type";
     desc.minValue = 0;
     desc.maxValue = 6;
     desc.defaultValue = (int)aubio_onset_complex;
@@ -166,8 +172,8 @@ Notes::getParameterDescriptors() const
     list.push_back(desc);
 
     desc = ParameterDescriptor();
-    desc.name = "pitchtype";
-    desc.description = "Pitch Detection Function Type";
+    desc.identifier = "pitchtype";
+    desc.name = "Pitch Detection Function Type";
     desc.minValue = 0;
     desc.maxValue = 4;
     desc.defaultValue = (int)aubio_pitch_yinfft;
@@ -181,8 +187,8 @@ Notes::getParameterDescriptors() const
     list.push_back(desc);
 
     desc = ParameterDescriptor();
-    desc.name = "minpitch";
-    desc.description = "Minimum Pitch";
+    desc.identifier = "minpitch";
+    desc.name = "Minimum Pitch";
     desc.minValue = 0;
     desc.maxValue = 127;
     desc.defaultValue = 32;
@@ -192,8 +198,8 @@ Notes::getParameterDescriptors() const
     list.push_back(desc);
 
     desc = ParameterDescriptor();
-    desc.name = "maxpitch";
-    desc.description = "Maximum Pitch";
+    desc.identifier = "maxpitch";
+    desc.name = "Maximum Pitch";
     desc.minValue = 0;
     desc.maxValue = 127;
     desc.defaultValue = 95;
@@ -203,8 +209,8 @@ Notes::getParameterDescriptors() const
     list.push_back(desc);
 
     desc = ParameterDescriptor();
-    desc.name = "wraprange";
-    desc.description = "Fold Higher or Lower Notes into Range";
+    desc.identifier = "wraprange";
+    desc.name = "Fold Higher or Lower Notes into Range";
     desc.minValue = 0;
     desc.maxValue = 1;
     desc.defaultValue = 0;
@@ -213,8 +219,8 @@ Notes::getParameterDescriptors() const
     list.push_back(desc);
 
     desc = ParameterDescriptor();
-    desc.name = "avoidleaps";
-    desc.description = "Avoid Multi-Octave Jumps";
+    desc.identifier = "avoidleaps";
+    desc.name = "Avoid Multi-Octave Jumps";
     desc.minValue = 0;
     desc.maxValue = 1;
     desc.defaultValue = 0;
@@ -223,8 +229,8 @@ Notes::getParameterDescriptors() const
     list.push_back(desc);
 
     desc = ParameterDescriptor();
-    desc.name = "peakpickthreshold";
-    desc.description = "Peak Picker Threshold";
+    desc.identifier = "peakpickthreshold";
+    desc.name = "Peak Picker Threshold";
     desc.minValue = 0;
     desc.maxValue = 1;
     desc.defaultValue = 0.3;
@@ -232,8 +238,8 @@ Notes::getParameterDescriptors() const
     list.push_back(desc);
 
     desc = ParameterDescriptor();
-    desc.name = "silencethreshold";
-    desc.description = "Silence Threshold";
+    desc.identifier = "silencethreshold";
+    desc.name = "Silence Threshold";
     desc.minValue = -120;
     desc.maxValue = 0;
     desc.defaultValue = -90;
@@ -310,9 +316,9 @@ Notes::getOutputDescriptors() const
     OutputList list;
 
     OutputDescriptor d;
-    d.name = "notes";
+    d.identifier = "notes";
+    d.name = "Notes";
     d.unit = "Hz";
-    d.description = "Notes";
     d.hasFixedBinCount = true;
     d.binCount = 2;
     d.binNames.push_back("Frequency");

@@ -22,7 +22,7 @@ using std::vector;
 using std::cerr;
 using std::endl;
 
-//#define HAVE_AUBIO_LOCKED_TEMPO_HACK
+#define HAVE_AUBIO_LOCKED_TEMPO_HACK
 
 Tempo::Tempo(float inputSampleRate) :
     Plugin(inputSampleRate),
@@ -57,21 +57,27 @@ Tempo::~Tempo()
 }
 
 string
-Tempo::getName() const
+Tempo::getIdentifier() const
 {
     return "aubiotempo";
 }
 
 string
-Tempo::getDescription() const
+Tempo::getName() const
 {
     return "Aubio Tempo Detector";
 }
 
 string
+Tempo::getDescription() const
+{
+    return "Estimate the musical tempo by tracking note onset timings";
+}
+
+string
 Tempo::getMaker() const
 {
-    return "Paul Brossier (plugin by Chris Cannam)";
+    return "Paul Brossier (method by Matthew Davies, plugin by Chris Cannam)";
 }
 
 int
@@ -138,8 +144,8 @@ Tempo::getParameterDescriptors() const
     ParameterList list;
     
     ParameterDescriptor desc;
-    desc.name = "onsettype";
-    desc.description = "Onset Detection Function Type";
+    desc.identifier = "onsettype";
+    desc.name = "Onset Detection Function Type";
     desc.minValue = 0;
     desc.maxValue = 6;
     desc.defaultValue = (int)aubio_onset_complex;
@@ -155,8 +161,8 @@ Tempo::getParameterDescriptors() const
     list.push_back(desc);
 
     desc = ParameterDescriptor();
-    desc.name = "peakpickthreshold";
-    desc.description = "Peak Picker Threshold";
+    desc.identifier = "peakpickthreshold";
+    desc.name = "Peak Picker Threshold";
     desc.minValue = 0;
     desc.maxValue = 1;
     desc.defaultValue = 0.3;
@@ -164,8 +170,8 @@ Tempo::getParameterDescriptors() const
     list.push_back(desc);
 
     desc = ParameterDescriptor();
-    desc.name = "silencethreshold";
-    desc.description = "Silence Threshold";
+    desc.identifier = "silencethreshold";
+    desc.name = "Silence Threshold";
     desc.minValue = -120;
     desc.maxValue = 0;
     desc.defaultValue = -90;
@@ -216,9 +222,9 @@ Tempo::getOutputDescriptors() const
     OutputList list;
 
     OutputDescriptor d;
-    d.name = "beats";
+    d.identifier = "beats";
+    d.name = "Beats";
     d.unit = "";
-    d.description = "Beats";
     d.hasFixedBinCount = true;
     d.binCount = 0;
     d.sampleType = OutputDescriptor::VariableSampleRate;
@@ -226,9 +232,9 @@ Tempo::getOutputDescriptors() const
     list.push_back(d);
 
 #ifdef HAVE_AUBIO_LOCKED_TEMPO_HACK
-    d.name = "tempo";
+    d.identifier = "tempo";
+    d.name = "Tempo";
     d.unit = "bpm";
-    d.description = "Tempo";
     d.hasFixedBinCount = true;
     d.binCount = 1;
     d.hasKnownExtents = false;

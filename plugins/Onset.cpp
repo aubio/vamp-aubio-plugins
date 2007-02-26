@@ -48,15 +48,21 @@ Onset::~Onset()
 }
 
 string
-Onset::getName() const
+Onset::getIdentifier() const
 {
     return "aubioonset";
 }
 
 string
-Onset::getDescription() const
+Onset::getName() const
 {
     return "Aubio Onset Detector";
+}
+
+string
+Onset::getDescription() const
+{
+    return "Estimate note onset times";
 }
 
 string
@@ -123,8 +129,8 @@ Onset::getParameterDescriptors() const
     ParameterList list;
     
     ParameterDescriptor desc;
-    desc.name = "onsettype";
-    desc.description = "Onset Detection Function Type";
+    desc.identifier = "onsettype";
+    desc.name = "Onset Detection Function Type";
     desc.minValue = 0;
     desc.maxValue = 6;
     desc.defaultValue = (int)aubio_onset_complex;
@@ -140,8 +146,8 @@ Onset::getParameterDescriptors() const
     list.push_back(desc);
 
     desc = ParameterDescriptor();
-    desc.name = "peakpickthreshold";
-    desc.description = "Peak Picker Threshold";
+    desc.identifier = "peakpickthreshold";
+    desc.name = "Peak Picker Threshold";
     desc.minValue = 0;
     desc.maxValue = 1;
     desc.defaultValue = 0.3;
@@ -149,8 +155,8 @@ Onset::getParameterDescriptors() const
     list.push_back(desc);
 
     desc = ParameterDescriptor();
-    desc.name = "silencethreshold";
-    desc.description = "Silence Threshold";
+    desc.identifier = "silencethreshold";
+    desc.name = "Silence Threshold";
     desc.minValue = -120;
     desc.maxValue = 0;
     desc.defaultValue = -90;
@@ -201,9 +207,9 @@ Onset::getOutputDescriptors() const
     OutputList list;
 
     OutputDescriptor d;
-    d.name = "onsets";
+    d.identifier = "onsets";
+    d.name = "Onsets";
     d.unit = "";
-    d.description = "Onsets";
     d.hasFixedBinCount = true;
     d.binCount = 0;
     d.sampleType = OutputDescriptor::VariableSampleRate;
@@ -211,9 +217,9 @@ Onset::getOutputDescriptors() const
     list.push_back(d);
 
     d = OutputDescriptor();
-    d.name = "detectionfunction";
+    d.identifier = "detectionfunction";
+    d.name = "Onset Detection Function";
     d.unit = "";
-    d.description = "Onset Detection Function";
     d.hasFixedBinCount = true;
     d.binCount = m_channelCount;
     d.hasKnownExtents = false;
