@@ -22,7 +22,7 @@ using std::vector;
 using std::cerr;
 using std::endl;
 
-#define HAVE_AUBIO_LOCKED_TEMPO_HACK
+//#define HAVE_AUBIO_LOCKED_TEMPO_HACK
 
 Tempo::Tempo(float inputSampleRate) :
     Plugin(inputSampleRate),

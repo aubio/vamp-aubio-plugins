@@ -27,8 +27,11 @@ static Vamp::PluginAdapter<Pitch> pitchAdapter;
 static Vamp::PluginAdapter<Notes> notesAdapter;
 static Vamp::PluginAdapter<Tempo> tempoAdapter;
 
-const VampPluginDescriptor *vampGetPluginDescriptor(unsigned int index)
+const VampPluginDescriptor *vampGetPluginDescriptor(unsigned int vampApiVersion,
+                                                    unsigned int index)
 {
+    if (vampApiVersion < 1) return 0;
+
     switch (index) {
     case  0: return onsetAdapter.getDescriptor();
     case  1: return pitchAdapter.getDescriptor();
