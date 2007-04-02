@@ -395,7 +395,7 @@ Notes::pushNote(FeatureSet &fs, const Vamp::RealTime &offTime)
     if (median < 45.0) return;
 
     float freq = median;
-    int midiPitch = (int)FLOOR(aubio_freqtomidi(freq) + 0.5);
+    int midiPitch = (int)floor(aubio_freqtomidi(freq) + 0.5);
     
     if (m_avoidLeaps) {
         if (m_prevPitch >= 0) {
