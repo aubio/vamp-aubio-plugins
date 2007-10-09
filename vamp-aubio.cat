@@ -2,3 +2,4 @@ vamp:vamp-aubio:aubionotes::Notes
 vamp:vamp-aubio:aubioonset::Time > Onsets
 vamp:vamp-aubio:aubiotempo::Time > Tempo
 vamp:vamp-aubio:aubiopitch::Pitch
+vamp:vamp-aubio:aubiosilence::Low Level Features

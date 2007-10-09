@@ -21,11 +21,13 @@
 #include "plugins/Pitch.h"
 #include "plugins/Notes.h"
 #include "plugins/Tempo.h"
+#include "plugins/Silence.h"
 
 static Vamp::PluginAdapter<Onset> onsetAdapter;
 static Vamp::PluginAdapter<Pitch> pitchAdapter;
 static Vamp::PluginAdapter<Notes> notesAdapter;
 static Vamp::PluginAdapter<Tempo> tempoAdapter;
+static Vamp::PluginAdapter<Silence> silenceAdapter;
 
 const VampPluginDescriptor *vampGetPluginDescriptor(unsigned int vampApiVersion,
                                                     unsigned int index)
@@ -37,6 +39,7 @@ const VampPluginDescriptor *vampGetPluginDescriptor(unsigned int vampApiVersion,
     case  1: return pitchAdapter.getDescriptor();
     case  2: return notesAdapter.getDescriptor();
     case  3: return tempoAdapter.getDescriptor();
+    case  4: return silenceAdapter.getDescriptor();
     default: return 0;
     }
 }
