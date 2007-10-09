@@ -11,7 +11,6 @@
     published by the Free Software Foundation; either version 2 of the
     License, or (at your option) any later version.  See the file
     COPYING included with this distribution for more information.
-
 */
 
 #include <math.h>
@@ -27,7 +26,7 @@ Silence::Silence(float inputSampleRate) :
     m_ibuf(0),
     m_pbuf(0),
     m_tmpptrs(0),
-    m_threshold(-70),
+    m_threshold(-80),
     m_prevSilent(false),
     m_first(true)
 {
@@ -119,7 +118,7 @@ Silence::getParameterDescriptors() const
     desc.name = "Silence Threshold";
     desc.minValue = -120;
     desc.maxValue = 0;
-    desc.defaultValue = -70;
+    desc.defaultValue = -80;
     desc.unit = "dB";
     desc.isQuantized = false;
     list.push_back(desc);
@@ -152,11 +151,12 @@ Silence::getOutputDescriptors() const
 
     OutputDescriptor d;
     d.identifier = "silencestart";
-    d.name = "Starts of Silent Regions";
+    d.name = "Beginnings of Silent Regions";
     d.description = "Return a single instant at the point where each silent region begins";
     d.hasFixedBinCount = true;
     d.binCount = 0;
     d.sampleType = OutputDescriptor::VariableSampleRate;
+    d.sampleRate = 0;
     list.push_back(d);
 
     d.identifier = "silenceend";
@@ -165,6 +165,7 @@ Silence::getOutputDescriptors() const
     d.hasFixedBinCount = true;
     d.binCount = 0;
     d.sampleType = OutputDescriptor::VariableSampleRate;
+    d.sampleRate = 0;
     list.push_back(d);
 
     d.identifier = "silencelevel";
@@ -178,6 +179,7 @@ Silence::getOutputDescriptors() const
     d.isQuantized = true;
     d.quantizeStep = 1;
     d.sampleType = OutputDescriptor::VariableSampleRate;
+    d.sampleRate = 0;
     list.push_back(d);
 
     return list;
@@ -213,17 +215,12 @@ Silence::process(const float *const *inputBuffers,
             vec.channels = m_channelCount;
             vec.data = m_tmpptrs;
             
-            if (silent) {
-                std::cerr << "silence at " << timestamp << std::endl;
-            }
-            
             for (size_t i = 0; i < m_stepSize - incr * 4; i += incr) {
                 for (size_t j = 0; j < m_channelCount; ++j) {
                     m_tmpptrs[j] = m_ibuf->data[j] + i;
                 }
                 bool subsilent = aubio_silence_detection(&vec, m_threshold);
                 if (silent == subsilent) {
-                    std::cerr << "silent == subsilent at " << i << " after" << std::endl;
                     off = i;
                     break;
                 }
@@ -236,11 +233,8 @@ Silence::process(const float *const *inputBuffers,
                     }
                     bool subsilent = aubio_silence_detection(&vec, m_threshold);
                     if (!subsilent) {
-                        std::cerr << "non-silence at " << i << " samples before" << std::endl;
                         off = -(long)i;
                         break;
-                    } else {
-                        std::cerr << "silence at " << i << " samples before" << std::endl;
                     }
                 }
             } else {
