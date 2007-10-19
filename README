@@ -5,13 +5,14 @@ vamp-aubio-plugins
 A set of Vamp plugins (http://www.sonicvisualiser.org/vamp.html) for
 audio feature extraction using Paul Brossier's aubio (http://aubio.piem.org/).
 
-This set includes four plugins: Onset for onset detection, Pitch for
-pitch tracking, Notes for combined onset and pitch, and Tempo to
-estimate and track beats based on onset locations.  These plugins
-compile into a single plugin library called vamp-aubio.so (the file
-extension may vary depending on your platform).
+This set includes five plugins: Onset for onset detection, Pitch for
+pitch tracking, Notes for combined onset and pitch, Tempo to estimate
+and track beats based on onset locations, and Silence to find sections
+of audio that are quieter than a given RMS signal level.  These
+plugins compile into a single plugin library called vamp-aubio.so (the
+file extension may vary depending on your platform).
 
-To build: Make sure you have aubio-0.3.0 or newer installed, and the
+To build: Make sure you have aubio-0.3.2 or newer installed, and the
 Vamp plugin SDK.  These are available at the URLs given at the top.
 Edit the Makefile appropriately, and type "make".  If the build
 succeeds, copy the vamp-aubio library file into your personal or

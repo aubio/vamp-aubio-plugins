@@ -10,7 +10,8 @@ PLUGINDIR	= plugins
 
 # Compile flags
 #
-CXXFLAGS	:= $(CXXFLAGS) -DNDEBUG -O2 -march=pentium3 -mfpmath=sse -ffast-math -Wall -I$(VAMPDIR) -I.
+CXXFLAGS	:= $(CXXFLAGS) -DNDEBUG -O2 -Wall -I$(VAMPDIR) -I.
+#CXXFLAGS	:= $(CXXFLAGS) -DNDEBUG -O2 -march=pentium3 -mfpmath=sse -ffast-math -Wall -I$(VAMPDIR) -I.
 
 # Libraries required for the plugins.  Note that we can (and actively
 # want to) statically link libstdc++, because our plugin exposes only
@@ -18,7 +19,7 @@ CXXFLAGS	:= $(CXXFLAGS) -DNDEBUG -O2 -march=pentium3 -mfpmath=sse -ffast-math -W
 #
 PLUGIN_LIBS	= -L$(VAMPLIBDIR) -Wl,-Bstatic -lvamp-sdk -laubio -lfftw3f -Wl,-Bdynamic
 #PLUGIN_LIBS	= -L$(VAMPLIBDIR) -lvamp-sdk /usr/lib/libaubio.a /usr/lib/libfftw3f.a
-#PLUGIN_LIBS	= -L$(VAMPLIBDIR) -lvamp-sdk $(shell g++ -print-file-name=libstdc++.a)
+#PLUGIN_LIBS	= -L$(VAMPLIBDIR) -Wl,-Bstatic -lvamp-sdk -laubio -lfftw3f -Wl,-Bdynamic $(shell g++ -print-file-name=libstdc++.a)
 
 # Flags required to tell the compiler to make a dynamically loadable object
 #
