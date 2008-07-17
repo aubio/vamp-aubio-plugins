@@ -4,7 +4,7 @@
     Vamp feature extraction plugins using Paul Brossier's Aubio library.
 
     Centre for Digital Music, Queen Mary, University of London.
-    This file copyright 2006 Chris Cannam.
+    This file copyright 2006-2008 Chris Cannam and QMUL.
     
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License as
@@ -22,8 +22,9 @@ using std::vector;
 using std::cerr;
 using std::endl;
 
-Notes::Notes(float inputSampleRate) :
+Notes::Notes(float inputSampleRate, unsigned int apiVersion) :
     Plugin(inputSampleRate),
+    m_apiVersion(apiVersion),
     m_ibuf(0),
     m_fftgrain(0),
     m_onset(0),
@@ -43,6 +44,10 @@ Notes::Notes(float inputSampleRate) :
     m_avoidLeaps(false),
     m_prevPitch(-1)
 {
+    if (apiVersion == 1) {
+        cerr << "vamp-aubio: WARNING: using compatibility version 1 of the Vamp API for note\n"
+             << "tracker plugin: upgrade your host to v2 for proper duration support" << endl;
+    }
 }
 
 Notes::~Notes()
@@ -83,7 +88,8 @@ Notes::getMaker() const
 int
 Notes::getPluginVersion() const
 {
-    return 1;
+    if (m_apiVersion == 1) return 2;
+    return 3;
 }
 
 string
@@ -320,10 +326,18 @@ Notes::getOutputDescriptors() const
     d.name = "Notes";
     d.unit = "Hz";
     d.hasFixedBinCount = true;
-    d.binCount = 2;
-    d.binNames.push_back("Frequency");
-    d.binNames.push_back("Duration");
-    d.binNames.push_back("Velocity");
+
+    if (m_apiVersion == 1) {
+        d.binCount = 3;
+        d.binNames.push_back("Frequency");
+        d.binNames.push_back("Duration");
+        d.binNames.push_back("Velocity");
+    } else {
+        d.binCount = 2;
+        d.binNames.push_back("Frequency");
+        d.binNames.push_back("Velocity");
+    }
+
     d.hasKnownExtents = false;
     d.isQuantized = false;
     d.sampleType = OutputDescriptor::VariableSampleRate;
@@ -429,9 +443,19 @@ Notes::pushNote(FeatureSet &fs, const Vamp::RealTime &offTime)
     if (m_currentOnset < m_delay) m_currentOnset = m_delay;
     feature.timestamp = m_currentOnset - m_delay;
     feature.values.push_back(freq);
-    feature.values.push_back
-        (Vamp::RealTime::realTime2Frame(offTime, lrintf(m_inputSampleRate)) -
-         Vamp::RealTime::realTime2Frame(m_currentOnset, lrintf(m_inputSampleRate)));
+
+    if (m_apiVersion == 1) {
+        feature.values.push_back
+            (Vamp::RealTime::realTime2Frame
+             (offTime, lrintf(m_inputSampleRate)) -
+             Vamp::RealTime::realTime2Frame
+             (m_currentOnset, lrintf(m_inputSampleRate)));
+        feature.hasDuration = false;
+    } else {
+        feature.hasDuration = true;
+        feature.duration = offTime - m_currentOnset;
+    }
+
     feature.values.push_back(m_currentLevel);
     fs[0].push_back(feature);
 }

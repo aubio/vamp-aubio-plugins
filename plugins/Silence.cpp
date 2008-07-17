@@ -4,7 +4,7 @@
     Vamp feature extraction plugins using Paul Brossier's Aubio library.
 
     Centre for Digital Music, Queen Mary, University of London.
-    This file copyright 2006 Chris Cannam.
+    This file copyright 2006-2008 Chris Cannam and QMUL.
     
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License as
@@ -21,8 +21,9 @@ using std::vector;
 using std::cerr;
 using std::endl;
 
-Silence::Silence(float inputSampleRate) :
+Silence::Silence(float inputSampleRate, unsigned int apiVersion) :
     Plugin(inputSampleRate),
+    m_apiVersion(apiVersion),
     m_ibuf(0),
     m_pbuf(0),
     m_tmpptrs(0),
@@ -30,6 +31,10 @@ Silence::Silence(float inputSampleRate) :
     m_prevSilent(false),
     m_first(true)
 {
+    if (m_apiVersion == 1) {
+        cerr << "vamp-aubio: WARNING: using compatibility version 1 of the Vamp API for silence\n"
+             << "detector plugin: upgrade your host to v2 for proper duration support" << endl;
+    }
 }
 
 Silence::~Silence()
@@ -66,7 +71,8 @@ Silence::getMaker() const
 int
 Silence::getPluginVersion() const
 {
-    return 1;
+    if (m_apiVersion == 1) return 2;
+    return 3;
 }
 
 string
@@ -150,23 +156,51 @@ Silence::getOutputDescriptors() const
     OutputList list;
 
     OutputDescriptor d;
-    d.identifier = "silencestart";
-    d.name = "Beginnings of Silent Regions";
-    d.description = "Return a single instant at the point where each silent region begins";
-    d.hasFixedBinCount = true;
-    d.binCount = 0;
-    d.sampleType = OutputDescriptor::VariableSampleRate;
-    d.sampleRate = 0;
-    list.push_back(d);
 
-    d.identifier = "silenceend";
-    d.name = "Ends of Silent Regions";
-    d.description = "Return a single instant at the point where each silent region ends";
-    d.hasFixedBinCount = true;
-    d.binCount = 0;
-    d.sampleType = OutputDescriptor::VariableSampleRate;
-    d.sampleRate = 0;
-    list.push_back(d);
+    if (m_apiVersion == 1) {
+
+        d.identifier = "silencestart";
+        d.name = "Beginnings of Silent Regions";
+        d.description = "Return a single instant at the point where each silent region begins";
+        d.hasFixedBinCount = true;
+        d.binCount = 0;
+        d.hasKnownExtents = false;
+        d.sampleType = OutputDescriptor::VariableSampleRate;
+        d.sampleRate = 0;
+        list.push_back(d);
+
+        d.identifier = "silenceend";
+        d.name = "Ends of Silent Regions";
+        d.description = "Return a single instant at the point where each silent region ends";
+        d.hasFixedBinCount = true;
+        d.binCount = 0;
+        d.hasKnownExtents = false;
+        d.sampleType = OutputDescriptor::VariableSampleRate;
+        d.sampleRate = 0;
+        list.push_back(d);
+
+    } else {
+
+        d.identifier = "silent";
+        d.name = "Silent Regions";
+        d.description = "Return an interval covering each silent region";
+        d.hasFixedBinCount = true;
+        d.binCount = 0;
+        d.hasKnownExtents = false;
+        d.sampleType = OutputDescriptor::VariableSampleRate;
+        d.sampleRate = 0;
+        list.push_back(d);
+
+        d.identifier = "noisy";
+        d.name = "Non-Silent Regions";
+        d.description = "Return an interval covering each non-silent region";
+        d.hasFixedBinCount = true;
+        d.binCount = 0;
+        d.hasKnownExtents = false;
+        d.sampleType = OutputDescriptor::VariableSampleRate;
+        d.sampleRate = 0;
+        list.push_back(d);
+    }
 
     d.identifier = "silencelevel";
     d.name = "Silence Test";
@@ -249,13 +283,30 @@ Silence::process(const float *const *inputBuffers,
         feature.timestamp = featureStamp;
         feature.values.push_back(silent ? 0 : 1);
         returnFeatures[2].push_back(feature);
+
         feature.values.clear();
 
-        if (silent) {
-            returnFeatures[0].push_back(feature);
+        if (m_apiVersion == 1) {
+            if (silent) {
+                returnFeatures[0].push_back(feature);
+            } else {
+                returnFeatures[1].push_back(feature);
+            }
         } else {
-            returnFeatures[1].push_back(feature);
-        }            
+            if (!m_first) {
+                feature.timestamp = m_lastChange;
+                feature.hasDuration = true;
+                feature.duration = featureStamp - m_lastChange;
+                if (silent) {
+                    // becoming silent, so this is a non-silent region
+                    returnFeatures[1].push_back(feature);
+                } else {
+                    // becoming non-silent, so this is a silent region
+                    returnFeatures[0].push_back(feature);
+                }                    
+            }
+            m_lastChange = featureStamp;
+        }
 
         m_prevSilent = silent;
         m_first = false;
@@ -268,12 +319,31 @@ Silence::process(const float *const *inputBuffers,
     m_ibuf->data = m_pbuf->data;
     m_pbuf->data = tmpdata;
 
+    m_lastTimestamp = timestamp;
+
     return returnFeatures;
 }
 
 Silence::FeatureSet
 Silence::getRemainingFeatures()
 {
+    FeatureSet returnFeatures;
+    
+    if (m_prevSilent) {
+        if (m_lastTimestamp > m_lastChange) {
+            Feature feature;
+            feature.hasTimestamp = true;
+            feature.timestamp = m_lastChange;
+            feature.hasDuration = true;
+            feature.duration = m_lastTimestamp - m_lastChange;
+            if (m_prevSilent) {
+                returnFeatures[0].push_back(feature);
+            } else {
+                returnFeatures[1].push_back(feature);
+            }                
+        }
+    }
+
     return FeatureSet();
 }
 

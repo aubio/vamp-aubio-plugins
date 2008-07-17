@@ -23,11 +23,35 @@
 #include "plugins/Tempo.h"
 #include "plugins/Silence.h"
 
+template <typename P>
+class VersionedPluginAdapter : public Vamp::PluginAdapterBase
+{
+public:
+    VersionedPluginAdapter(unsigned int v) : PluginAdapterBase(), m_v(v) { }
+    virtual ~VersionedPluginAdapter() { }
+
+protected:
+    Vamp::Plugin *createPlugin(float inputSampleRate) {
+        P *p = new P(inputSampleRate, m_v);
+        Vamp::Plugin *plugin = dynamic_cast<Vamp::Plugin *>(p);
+        return plugin;
+    }
+    unsigned int m_v;
+};
+
 static Vamp::PluginAdapter<Onset> onsetAdapter;
 static Vamp::PluginAdapter<Pitch> pitchAdapter;
-static Vamp::PluginAdapter<Notes> notesAdapter;
 static Vamp::PluginAdapter<Tempo> tempoAdapter;
-static Vamp::PluginAdapter<Silence> silenceAdapter;
+
+// These two plugins both benefit from the Vamp v2 API if available
+static VersionedPluginAdapter<Notes> *notesAdapter = 0;
+static VersionedPluginAdapter<Silence> *silenceAdapter = 0;
+
+struct Tidy
+{
+    ~Tidy() { delete notesAdapter; delete silenceAdapter; }
+};
+static Tidy tidy;
 
 const VampPluginDescriptor *vampGetPluginDescriptor(unsigned int vampApiVersion,
                                                     unsigned int index)
@@ -37,9 +61,20 @@ const VampPluginDescriptor *vampGetPluginDescriptor(unsigned int vampApiVersion,
     switch (index) {
     case  0: return onsetAdapter.getDescriptor();
     case  1: return pitchAdapter.getDescriptor();
-    case  2: return notesAdapter.getDescriptor();
     case  3: return tempoAdapter.getDescriptor();
-    case  4: return silenceAdapter.getDescriptor();
+
+    case  2: 
+        if (!notesAdapter) {
+            notesAdapter = new VersionedPluginAdapter<Notes>(vampApiVersion);
+        }
+        return notesAdapter->getDescriptor();
+
+    case  4:
+        if (!silenceAdapter) {
+            silenceAdapter = new VersionedPluginAdapter<Silence>(vampApiVersion);
+        }
+        return silenceAdapter->getDescriptor();
+
     default: return 0;
     }
 }

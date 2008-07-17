@@ -25,7 +25,7 @@
 class Notes : public Vamp::Plugin
 {
 public:
-    Notes(float inputSampleRate);
+    Notes(float inputSampleRate, unsigned int apiVersion);
     virtual ~Notes();
 
     bool initialise(size_t channels, size_t stepSize, size_t blockSize);
@@ -55,6 +55,7 @@ public:
     FeatureSet getRemainingFeatures();
 
 protected:
+    int m_apiVersion;
     fvec_t *m_ibuf;
     cvec_t *m_fftgrain;
     fvec_t *m_onset;
