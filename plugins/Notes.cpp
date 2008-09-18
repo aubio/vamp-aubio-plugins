@@ -47,6 +47,8 @@ Notes::Notes(float inputSampleRate, unsigned int apiVersion) :
     if (apiVersion == 1) {
         cerr << "vamp-aubio: WARNING: using compatibility version 1 of the Vamp API for note\n"
              << "tracker plugin: upgrade your host to v2 for proper duration support" << endl;
+    } else {
+        cerr << "vamp-aubio: NOTE: using v2 API for true durations" << endl;
     }
 }
 
