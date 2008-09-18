@@ -338,6 +338,7 @@ Notes::getOutputDescriptors() const
         d.binCount = 2;
         d.binNames.push_back("Frequency");
         d.binNames.push_back("Velocity");
+        d.hasDuration = true;
     }
 
     d.hasKnownExtents = false;

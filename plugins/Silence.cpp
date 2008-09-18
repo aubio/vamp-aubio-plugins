@@ -189,6 +189,7 @@ Silence::getOutputDescriptors() const
         d.hasKnownExtents = false;
         d.sampleType = OutputDescriptor::VariableSampleRate;
         d.sampleRate = 0;
+        d.hasDuration = true;
         list.push_back(d);
 
         d.identifier = "noisy";
@@ -199,6 +200,7 @@ Silence::getOutputDescriptors() const
         d.hasKnownExtents = false;
         d.sampleType = OutputDescriptor::VariableSampleRate;
         d.sampleRate = 0;
+        d.hasDuration = true;
         list.push_back(d);
     }
 
