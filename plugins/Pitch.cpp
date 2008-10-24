@@ -22,12 +22,25 @@ using std::vector;
 using std::cerr;
 using std::endl;
 
+static float
+getFrequencyForMIDIPitch(int midiPitch)
+{
+    return 440.f * powf(2.0, (float(midiPitch) - 69.0) / 12.0);
+}
+
 Pitch::Pitch(float inputSampleRate) :
     Plugin(inputSampleRate),
     m_ibuf(0),
     m_pitchdet(0),
     m_pitchtype(aubio_pitch_yinfft),
-    m_pitchmode(aubio_pitchm_freq)
+    m_pitchmode(aubio_pitchm_freq),
+    m_minfreq(getFrequencyForMIDIPitch(32)),
+    m_maxfreq(getFrequencyForMIDIPitch(95)),
+    m_silence(-90),
+    m_wrapRange(false),
+    m_stepSize(0),
+    m_blockSize(0),
+    m_channelCount(0)
 {
 }
 
@@ -64,7 +77,7 @@ Pitch::getMaker() const
 int
 Pitch::getPluginVersion() const
 {
-    return 1;
+    return 2;
 }
 
 string
@@ -129,6 +142,46 @@ Pitch::getParameterDescriptors() const
     desc.valueNames.push_back("YIN with FFT");
     list.push_back(desc);
 
+    desc = ParameterDescriptor();
+    desc.identifier = "minfreq";
+    desc.name = "Minimum Fundamental Frequency";
+    desc.minValue = 1;
+    desc.maxValue = m_inputSampleRate/2;
+    desc.defaultValue = getFrequencyForMIDIPitch(32);
+    desc.unit = "Hz";
+    desc.isQuantized = false;
+    list.push_back(desc);
+
+    desc = ParameterDescriptor();
+    desc.identifier = "maxfreq";
+    desc.name = "Maximum Fundamental Frequency";
+    desc.minValue = 1;
+    desc.maxValue = m_inputSampleRate/2;
+    desc.defaultValue = getFrequencyForMIDIPitch(95);
+    desc.unit = "Hz";
+    desc.isQuantized = false;
+    list.push_back(desc);
+
+    desc = ParameterDescriptor();
+    desc.identifier = "wraprange";
+    desc.name = "Fold Higher or Lower Frequencies into Range";
+    desc.minValue = 0;
+    desc.maxValue = 1;
+    desc.defaultValue = 0;
+    desc.isQuantized = true;
+    desc.quantizeStep = 1;
+    list.push_back(desc);
+
+    desc = ParameterDescriptor();
+    desc.identifier = "silencethreshold";
+    desc.name = "Silence Threshold";
+    desc.minValue = -120;
+    desc.maxValue = 0;
+    desc.defaultValue = -90;
+    desc.unit = "dB";
+    desc.isQuantized = false;
+    list.push_back(desc);
+
     return list;
 }
 
@@ -137,6 +190,14 @@ Pitch::getParameter(std::string param) const
 {
     if (param == "pitchtype") {
         return m_pitchtype;
+    } else if (param == "minfreq") {
+        return m_minfreq;
+    } else if (param == "maxfreq") {
+        return m_maxfreq;
+    } else if (param == "wraprange") {
+        return m_wrapRange ? 1.0 : 0.0;
+    } else if (param == "silencethreshold") {
+        return m_silence;
     } else {
         return 0.0;
     }
@@ -153,6 +214,14 @@ Pitch::setParameter(std::string param, float value)
         case 3: m_pitchtype = aubio_pitch_fcomb; break;
         case 4: m_pitchtype = aubio_pitch_yinfft; break;
         }
+    } else if (param == "minfreq") {
+        m_minfreq = value;
+    } else if (param == "maxfreq") {
+        m_maxfreq = value;
+    } else if (param == "wraprange") {
+        m_wrapRange = (value > 0.5);
+    } else if (param == "silencethreshold") {
+        m_silence = value;
     }
 }
 
@@ -163,13 +232,17 @@ Pitch::getOutputDescriptors() const
 
     OutputDescriptor d;
     d.identifier = "frequency";
-    d.name = "Frequency";
+    d.name = "Fundamental Frequency";
     d.unit = "Hz";
     d.hasFixedBinCount = true;
     d.binCount = 1;
     d.hasKnownExtents = false;
     d.isQuantized = false;
-    d.sampleType = OutputDescriptor::OneSamplePerStep;
+    d.sampleType = OutputDescriptor::VariableSampleRate;
+    d.sampleRate = 0;
+    if (m_stepSize != 0) {
+        d.sampleRate = m_inputSampleRate / m_stepSize;
+    }
     list.push_back(d);
 
     return list;
@@ -177,21 +250,47 @@ Pitch::getOutputDescriptors() const
 
 Pitch::FeatureSet
 Pitch::process(const float *const *inputBuffers,
-               Vamp::RealTime /* timestamp */)
+               Vamp::RealTime timestamp)
 {
+    FeatureSet returnFeatures;
+
+    if (m_stepSize == 0) {
+        std::cerr << "Pitch::process: Pitch plugin not initialised" << std::endl;
+        return returnFeatures;
+    }
+
     for (size_t i = 0; i < m_stepSize; ++i) {
         for (size_t j = 0; j < m_channelCount; ++j) {
             fvec_write_sample(m_ibuf, inputBuffers[j][i], j, i);
         }
     }
 
-    float pitch = aubio_pitchdetection(m_pitchdet, m_ibuf);
+    float freq = aubio_pitchdetection(m_pitchdet, m_ibuf);
+
+    bool silent = aubio_silence_detection(m_ibuf, m_silence);
+    if (silent) {
+//        std::cerr << "(silent)" << std::endl;
+        return returnFeatures;
+    }
+
+    if (m_wrapRange) {
+        while (freq > 0 && freq < m_minfreq) {
+            freq = freq * 2.0;
+        }
+        while (freq > m_maxfreq) {
+            freq = freq / 2.0;
+        }
+    }
+
+    if (freq < m_minfreq || freq > m_maxfreq) {
+        return returnFeatures;
+    }
 
     Feature feature;
-    feature.hasTimestamp = false;
-    feature.values.push_back(pitch);
+    feature.hasTimestamp = true;
+    feature.timestamp = timestamp;
+    feature.values.push_back(freq);
 
-    FeatureSet returnFeatures;
     returnFeatures[0].push_back(feature);
     return returnFeatures;
 }

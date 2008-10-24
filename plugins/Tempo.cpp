@@ -71,7 +71,7 @@ Tempo::getName() const
 string
 Tempo::getDescription() const
 {
-    return "Estimate the musical tempo by tracking note onset timings";
+    return "Estimate the musical tempo and track beat positions";
 }
 
 string

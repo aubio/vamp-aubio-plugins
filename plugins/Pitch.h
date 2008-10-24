@@ -57,6 +57,11 @@ protected:
     aubio_pitchdetection_t *m_pitchdet;
     aubio_pitchdetection_type m_pitchtype;
     aubio_pitchdetection_mode m_pitchmode;
+    float m_minfreq;
+    float m_maxfreq;
+    float m_silence;
+    bool m_wrapRange;
+
     size_t m_stepSize;
     size_t m_blockSize;
     size_t m_channelCount;
