@@ -290,8 +290,10 @@ Silence::process(const float *const *inputBuffers,
 
         if (m_apiVersion == 1) {
             if (silent) {
+                // silencestart feature
                 returnFeatures[0].push_back(feature);
             } else {
+                // silenceend feature
                 returnFeatures[1].push_back(feature);
             }
         } else {
@@ -300,10 +302,12 @@ Silence::process(const float *const *inputBuffers,
                 feature.hasDuration = true;
                 feature.duration = featureStamp - m_lastChange;
                 if (silent) {
-                    // becoming silent, so this is a non-silent region
+                    // non-silent regions feature
+                    // (becoming silent, so this is a non-silent region)
                     returnFeatures[1].push_back(feature);
                 } else {
-                    // becoming non-silent, so this is a silent region
+                    // silent regions feature
+                    // (becoming non-silent, so this is a silent region)
                     returnFeatures[0].push_back(feature);
                 }                    
             }
@@ -331,21 +335,42 @@ Silence::getRemainingFeatures()
 {
     FeatureSet returnFeatures;
     
-    if (m_prevSilent) {
-        if (m_lastTimestamp > m_lastChange) {
-            Feature feature;
-            feature.hasTimestamp = true;
+//    std::cerr << "Silence::getRemainingFeatures: m_lastTimestamp = " << m_lastTimestamp << ", m_lastChange = " << m_lastChange << ", m_apiVersion = " << m_apiVersion << ", m_prevSilent = " << m_prevSilent << std::endl;
+
+    if (m_lastTimestamp > m_lastChange) {
+
+        Feature feature;
+        feature.hasTimestamp = true;
+
+        if (m_apiVersion == 1) {
+            if (m_prevSilent) {
+                // silenceend feature
+                feature.timestamp = m_lastTimestamp;
+                returnFeatures[1].push_back(feature);
+            }
+        } else {
+
             feature.timestamp = m_lastChange;
             feature.hasDuration = true;
             feature.duration = m_lastTimestamp - m_lastChange;
             if (m_prevSilent) {
+                // silent regions feature
                 returnFeatures[0].push_back(feature);
             } else {
+                // non-silent regions feature
                 returnFeatures[1].push_back(feature);
             }                
         }
+
+        if (!m_prevSilent) {
+            Feature silenceTestFeature;
+            silenceTestFeature.hasTimestamp = true;
+            silenceTestFeature.timestamp = m_lastTimestamp;
+            silenceTestFeature.values.push_back(0);
+            returnFeatures[2].push_back(silenceTestFeature);
+        }
     }
 
-    return FeatureSet();
+    return returnFeatures;
 }
 
