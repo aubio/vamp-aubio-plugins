@@ -65,7 +65,7 @@ Tempo::getIdentifier() const
 string
 Tempo::getName() const
 {
-    return "Aubio Tempo Detector";
+    return "Aubio Beat Tracker";
 }
 
 string
