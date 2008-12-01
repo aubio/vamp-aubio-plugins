@@ -1,29 +1,21 @@
 
-# Location of Vamp SDK
-#
-VAMPDIR		= ../vamp-plugin-sdk
-VAMPLIBDIR	= $(VAMPDIR)/vamp-sdk
-
 # Location of our plugins
 #
 PLUGINDIR	= plugins
 
 # Compile flags
 #
-CXXFLAGS	:= $(CXXFLAGS) -DNDEBUG -O2 -Wall -I$(VAMPDIR) -I.
-#CXXFLAGS	:= $(CXXFLAGS) -DNDEBUG -O2 -march=pentium3 -mfpmath=sse -ffast-math -Wall -I$(VAMPDIR) -I.
+CXXFLAGS	:= $(CXXFLAGS) -fPIC -DNDEBUG -O2 -Wall -I.
 
 # Libraries required for the plugins.  Note that we can (and actively
 # want to) statically link libstdc++, because our plugin exposes only
 # a C API so there are no boundary compatibility problems.
 #
-PLUGIN_LIBS	= -L$(VAMPLIBDIR) -Wl,-Bstatic -lvamp-sdk -laubio -lfftw3f -Wl,-Bdynamic
-#PLUGIN_LIBS	= -L$(VAMPLIBDIR) -lvamp-sdk /usr/lib/libaubio.a /usr/lib/libfftw3f.a
-#PLUGIN_LIBS	= -L$(VAMPLIBDIR) -Wl,-Bstatic -lvamp-sdk -laubio -lfftw3f -Wl,-Bdynamic $(shell g++ -print-file-name=libstdc++.a)
+PLUGIN_LIBS	= -Wl,-Bstatic -lvamp-sdk -laubio -lfftw3f -Wl,-Bdynamic
 
 # Flags required to tell the compiler to make a dynamically loadable object
 #
-PLUGIN_LDFLAGS	= -shared -Wl,-Bsymbolic -static-libgcc
+PLUGIN_LDFLAGS	= -shared -Wl,-Bsymbolic -static-libgcc -Wl,--version-script=vamp-plugin.map
 
 # File extension for a dynamically loadable object
 #
