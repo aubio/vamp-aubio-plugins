@@ -17,6 +17,8 @@
 #include <math.h>
 #include "Notes.h"
 
+#include <algorithm>
+
 using std::string;
 using std::vector;
 using std::cerr;

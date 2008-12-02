@@ -22,7 +22,7 @@ PLUGIN_LDFLAGS	= -shared -Wl,-Bsymbolic -static-libgcc -Wl,--version-script=vamp
 PLUGIN_EXT	= .so
 
 ## For OS/X with g++:
-#PLUGIN_LDFLAGS	= -dynamiclib
+#PLUGIN_LDFLAGS	= -dynamiclib -exported_symbols_list=vamp-plugin.list
 #PLUGIN_EXT	= .dylib
 
 
