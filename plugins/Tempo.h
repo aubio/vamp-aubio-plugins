@@ -71,7 +71,6 @@ protected:
     float m_silence;
     size_t m_stepSize;
     size_t m_blockSize;
-    size_t m_channelCount;
     Vamp::RealTime m_delay;
     Vamp::RealTime m_lastBeat;
 };

@@ -96,7 +96,11 @@ Notes::getCopyright() const
 bool
 Notes::initialise(size_t channels, size_t stepSize, size_t blockSize)
 {
-    m_channelCount = channels;
+    if (channels != 1) {
+        std::cerr << "Notes::initialise: channels must be 1" << std::endl;
+        return false;
+    }
+
     m_stepSize = stepSize;
     m_blockSize = blockSize;
 
@@ -108,17 +112,16 @@ Notes::initialise(size_t channels, size_t stepSize, size_t blockSize)
         processingBlockSize = stepSize * 4;
     }
 
-    m_ibuf = new_fvec(stepSize, channels);
-    m_onset = new_fvec(1, channels);
-    m_fftgrain = new_cvec(processingBlockSize, channels);
-    m_pv = new_aubio_pvoc(processingBlockSize, stepSize, channels);
+    m_ibuf = new_fvec(stepSize);
+    m_onset = new_fvec(1);
+    m_fftgrain = new_cvec(processingBlockSize);
+    m_pv = new_aubio_pvoc(processingBlockSize, stepSize);
     m_peakpick = new_aubio_peakpicker(m_threshold);
 
-    m_onsetdet = new_aubio_onsetdetection(m_onsettype, processingBlockSize, channels);
+    m_onsetdet = new_aubio_onsetdetection(m_onsettype, processingBlockSize);
 
     m_pitchdet = new_aubio_pitchdetection(processingBlockSize * 4,
                                           stepSize,
-                                          channels,
                                           lrintf(m_inputSampleRate),
                                           m_pitchtype,
                                           m_pitchmode);

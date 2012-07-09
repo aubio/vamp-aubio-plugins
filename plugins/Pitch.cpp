@@ -38,8 +38,7 @@ Pitch::Pitch(float inputSampleRate) :
     m_silence(-90),
     m_wrapRange(false),
     m_stepSize(0),
-    m_blockSize(0),
-    m_channelCount(0)
+    m_blockSize(0)
 {
 }
 
@@ -88,11 +87,15 @@ Pitch::getCopyright() const
 bool
 Pitch::initialise(size_t channels, size_t stepSize, size_t blockSize)
 {
-    m_channelCount = channels;
+    if (channels != 1) {
+        std::cerr << "Pitch::initialise: channels must be 1" << std::endl;
+        return false;
+    }
+
     m_stepSize = stepSize;
     m_blockSize = blockSize;
 
-    m_ibuf = new_fvec(stepSize, channels);
+    m_ibuf = new_fvec(stepSize);
 
     m_pitchdet = new_aubio_pitchdetection(blockSize,
                                           stepSize,

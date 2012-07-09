@@ -78,12 +78,16 @@ Silence::getCopyright() const
 bool
 Silence::initialise(size_t channels, size_t stepSize, size_t blockSize)
 {
-    m_channelCount = channels;
+    if (channels != 1) {
+        std::cerr << "Silence::initialise: channels must be 1" << std::endl;
+        return false;
+    }
+
     m_stepSize = stepSize;
     m_blockSize = blockSize;
 
-    m_ibuf = new_fvec(stepSize, channels);
-    m_pbuf = new_fvec(stepSize, channels);
+    m_ibuf = new_fvec(stepSize);
+    m_pbuf = new_fvec(stepSize);
     m_tmpptrs = new smpl_t *[channels];
 
     return true;

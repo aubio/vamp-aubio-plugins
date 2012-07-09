@@ -71,7 +71,6 @@ protected:
     size_t m_median;
     size_t m_stepSize;
     size_t m_blockSize;
-    size_t m_channelCount;
     int m_minpitch;
     int m_maxpitch;
     bool m_wrapRange;

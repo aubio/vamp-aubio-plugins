@@ -38,8 +38,7 @@ Tempo::Tempo(float inputSampleRate) :
     m_btout(0),
     m_btcounter(0),
     m_threshold(0.3),
-    m_silence(-90),
-    m_channelCount(1)
+    m_silence(-90)
 {
 }
 
@@ -95,17 +94,21 @@ Tempo::getCopyright() const
 bool
 Tempo::initialise(size_t channels, size_t stepSize, size_t blockSize)
 {
-    m_channelCount = channels;
+    if (channels != 1) {
+        std::cerr << "Tempo::initialise: channels must be 1" << std::endl;
+        return false;
+    }
+
     m_stepSize = stepSize;
     m_blockSize = blockSize;
 
-    m_ibuf = new_fvec(stepSize, channels);
-    m_onset = new_fvec(1, channels);
-    m_fftgrain = new_cvec(blockSize, channels);
-    m_pv = new_aubio_pvoc(blockSize, stepSize, channels);
+    m_ibuf = new_fvec(stepSize);
+    m_onset = new_fvec(1);
+    m_fftgrain = new_cvec(blockSize);
+    m_pv = new_aubio_pvoc(blockSize, stepSize);
     m_peakpick = new_aubio_peakpicker(m_threshold);
 
-    m_onsetdet = new_aubio_onsetdetection(m_onsettype, blockSize, channels);
+    m_onsetdet = new_aubio_onsetdetection(m_onsettype, blockSize);
     
     m_delay = Vamp::RealTime::frame2RealTime(3 * stepSize,
                                              lrintf(m_inputSampleRate));

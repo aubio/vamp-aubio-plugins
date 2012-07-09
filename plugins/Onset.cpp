@@ -32,8 +32,7 @@ Onset::Onset(float inputSampleRate) :
     m_onsetdet(0),
     m_onsettype(aubio_onset_complex),
     m_threshold(0.3),
-    m_silence(-90),
-    m_channelCount(1)
+    m_silence(-90)
 {
 }
 
@@ -86,17 +85,21 @@ Onset::getCopyright() const
 bool
 Onset::initialise(size_t channels, size_t stepSize, size_t blockSize)
 {
-    m_channelCount = channels;
+    if (channels != 1) {
+        std::cerr << "Onset::initialise: channels must be 1" << std::endl;
+        return false;
+    }
+
     m_stepSize = stepSize;
     m_blockSize = blockSize;
 
-    m_ibuf = new_fvec(stepSize, channels);
-    m_onset = new_fvec(1, channels);
-    m_fftgrain = new_cvec(blockSize, channels);
-    m_pv = new_aubio_pvoc(blockSize, stepSize, channels);
+    m_ibuf = new_fvec(stepSize);
+    m_onset = new_fvec(1);
+    m_fftgrain = new_cvec(blockSize);
+    m_pv = new_aubio_pvoc(blockSize, stepSize);
     m_peakpick = new_aubio_peakpicker(m_threshold);
 
-    m_onsetdet = new_aubio_onsetdetection(m_onsettype, blockSize, channels);
+    m_onsetdet = new_aubio_onsetdetection(m_onsettype, blockSize);
     
     m_delay = Vamp::RealTime::frame2RealTime(4 * stepSize,
                                              lrintf(m_inputSampleRate));
@@ -221,7 +224,7 @@ Onset::getOutputDescriptors() const
     d.name = "Onset Detection Function";
     d.unit = "";
     d.hasFixedBinCount = true;
-    d.binCount = m_channelCount;
+    d.binCount = 1;
     d.hasKnownExtents = false;
     d.isQuantized = false;
     d.sampleType = OutputDescriptor::OneSamplePerStep;

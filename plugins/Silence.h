@@ -59,7 +59,6 @@ protected:
     float m_threshold;
     size_t m_stepSize;
     size_t m_blockSize;
-    size_t m_channelCount;
     bool m_prevSilent;
     bool m_first;
     Vamp::RealTime m_lastChange;

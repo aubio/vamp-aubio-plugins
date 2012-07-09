@@ -65,7 +65,6 @@ protected:
 
     size_t m_stepSize;
     size_t m_blockSize;
-    size_t m_channelCount;
 };
 
 
