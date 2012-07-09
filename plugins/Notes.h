@@ -22,6 +22,8 @@
 
 #include <deque>
 
+#include "Types.h"
+
 class Notes : public Vamp::Plugin
 {
 public:
@@ -60,12 +62,11 @@ protected:
     cvec_t *m_fftgrain;
     fvec_t *m_onset;
     aubio_pvoc_t *m_pv;
-    aubio_pickpeak_t *m_peakpick;
-    aubio_onsetdetection_t *m_onsetdet;
-    aubio_onsetdetection_type m_onsettype;
-    aubio_pitchdetection_t *m_pitchdet;
-    aubio_pitchdetection_type m_pitchtype;
-    aubio_pitchdetection_mode m_pitchmode;
+    aubio_peakpicker_t *m_peakpick;
+    aubio_onset_t *m_onsetdet;
+    OnsetType m_onsettype;
+    aubio_pitch_t *m_pitchdet;
+    PitchType m_pitchtype;
     float m_threshold;
     float m_silence;
     size_t m_median;

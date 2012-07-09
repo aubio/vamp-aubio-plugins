@@ -33,10 +33,9 @@ Notes::Notes(float inputSampleRate, unsigned int apiVersion) :
     m_pv(0),
     m_peakpick(0),
     m_onsetdet(0),
-    m_onsettype(aubio_onset_complex),
+    m_onsettype(OnsetComplex),
     m_pitchdet(0),
-    m_pitchtype(aubio_pitch_yinfft),
-    m_pitchmode(aubio_pitchm_freq),
+    m_pitchtype(PitchYinFFT),
     m_threshold(0.3),
     m_silence(-90),
     m_median(6),
@@ -56,8 +55,8 @@ Notes::Notes(float inputSampleRate, unsigned int apiVersion) :
 
 Notes::~Notes()
 {
-    if (m_onsetdet) aubio_onsetdetection_free(m_onsetdet);
-    if (m_pitchdet) del_aubio_pitchdetection(m_pitchdet);
+    if (m_onsetdet) del_aubio_onset(m_onsetdet);
+    if (m_pitchdet) del_aubio_pitch(m_pitchdet);
     if (m_ibuf) del_fvec(m_ibuf);
     if (m_onset) del_fvec(m_onset);
     if (m_fftgrain) del_cvec(m_fftgrain);
@@ -110,8 +109,8 @@ Notes::initialise(size_t channels, size_t stepSize, size_t blockSize)
     m_blockSize = blockSize;
 
     size_t processingBlockSize;
-    if (m_onsettype == aubio_onset_energy ||
-        m_onsettype == aubio_onset_hfc) {
+    if (m_onsettype == OnsetEnergy ||
+        m_onsettype == OnsetHFC) {
         processingBlockSize = stepSize * 2;
     } else {
         processingBlockSize = stepSize * 4;

@@ -20,6 +20,8 @@
 #include <vamp-sdk/Plugin.h>
 #include <aubio/aubio.h>
 
+#include "Types.h"
+
 class Tempo : public Vamp::Plugin
 {
 public:
@@ -56,10 +58,10 @@ protected:
     cvec_t *m_fftgrain;
     fvec_t *m_onset;
     aubio_pvoc_t *m_pv;
-    aubio_pickpeak_t *m_peakpick;
-    aubio_onsetdetection_t *m_onsetdet;
-    aubio_onsetdetection_type m_onsettype;
-    aubio_beattracking_t *m_beattracking;
+    aubio_peakpicker_t *m_peakpick;
+    aubio_onset_t *m_onsetdet;
+    OnsetType m_onsettype;
+    aubio_tempo_t *m_tempo;
     fvec_t *m_dfframe;
     fvec_t *m_btout;
     uint_t m_winlen;

@@ -54,9 +54,8 @@ public:
 
 protected:
     fvec_t *m_ibuf;
-    aubio_pitchdetection_t *m_pitchdet;
-    aubio_pitchdetection_type m_pitchtype;
-    aubio_pitchdetection_mode m_pitchmode;
+    aubio_pitch_t *m_pitchdet;
+    PitchType m_pitchtype;
     float m_minfreq;
     float m_maxfreq;
     float m_silence;
