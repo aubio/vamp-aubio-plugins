@@ -56,6 +56,7 @@ public:
 
 protected:
     fvec_t *m_ibuf;
+    fvec_t *m_obuf;
     aubio_pitch_t *m_pitchdet;
     PitchType m_pitchtype;
     float m_minfreq;

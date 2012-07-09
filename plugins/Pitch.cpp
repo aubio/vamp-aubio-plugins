@@ -46,6 +46,7 @@ Pitch::~Pitch()
 {
     if (m_pitchdet) del_aubio_pitch(m_pitchdet);
     if (m_ibuf) del_fvec(m_ibuf);
+    if (m_obuf) del_fvec(m_obuf);
 }
 
 string
@@ -96,13 +97,15 @@ Pitch::initialise(size_t channels, size_t stepSize, size_t blockSize)
     m_blockSize = blockSize;
 
     m_ibuf = new_fvec(stepSize);
+    m_obuf = new_fvec(1);
 
-    m_pitchdet = new_aubio_pitchdetection(blockSize,
-                                          stepSize,
-                                          channels,
-                                          lrintf(m_inputSampleRate),
-                                          m_pitchtype,
-                                          m_pitchmode);
+    m_pitchdet = new_aubio_pitch
+        (const_cast<char *>(getAubioNameForPitchType(m_pitchtype)),
+         blockSize,
+         stepSize,
+         lrintf(m_inputSampleRate));
+
+    aubio_pitch_set_unit(m_pitchdet, "freq");
 
     return true;
 }
@@ -134,7 +137,7 @@ Pitch::getParameterDescriptors() const
     desc.name = "Pitch Detection Function Type";
     desc.minValue = 0;
     desc.maxValue = 4;
-    desc.defaultValue = (int)aubio_pitch_yinfft;
+    desc.defaultValue = (int)PitchYinFFT;
     desc.isQuantized = true;
     desc.quantizeStep = 1;
     desc.valueNames.push_back("YIN Frequency Estimator");
@@ -210,11 +213,11 @@ Pitch::setParameter(std::string param, float value)
 {
     if (param == "pitchtype") {
         switch (lrintf(value)) {
-        case 0: m_pitchtype = aubio_pitch_yin; break;
-        case 1: m_pitchtype = aubio_pitch_mcomb; break;
-        case 2: m_pitchtype = aubio_pitch_schmitt; break;
-        case 3: m_pitchtype = aubio_pitch_fcomb; break;
-        case 4: m_pitchtype = aubio_pitch_yinfft; break;
+        case 0: m_pitchtype = PitchYin; break;
+        case 1: m_pitchtype = PitchMComb; break;
+        case 2: m_pitchtype = PitchSchmitt; break;
+        case 3: m_pitchtype = PitchFComb; break;
+        case 4: m_pitchtype = PitchYinFFT; break;
         }
     } else if (param == "minfreq") {
         m_minfreq = value;
@@ -262,12 +265,12 @@ Pitch::process(const float *const *inputBuffers,
     }
 
     for (size_t i = 0; i < m_stepSize; ++i) {
-        for (size_t j = 0; j < m_channelCount; ++j) {
-            fvec_write_sample(m_ibuf, inputBuffers[j][i], j, i);
-        }
+        fvec_write_sample(m_ibuf, inputBuffers[0][i], i);
     }
 
-    float freq = aubio_pitchdetection(m_pitchdet, m_ibuf);
+    aubio_pitch_do(m_pitchdet, m_ibuf, m_obuf);
+    
+    float freq = m_obuf->data[0];
 
     bool silent = aubio_silence_detection(m_ibuf, m_silence);
     if (silent) {

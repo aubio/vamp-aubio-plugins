@@ -18,26 +18,19 @@
 
 const char *getAubioNameForOnsetType(OnsetType t)
 {
-    switch (t) {
-    case OnsetEnergy: return "energy";
-    case OnsetSpecDiff: return "specdiff";
-    case OnsetHFC: return "hfc";
-    case OnsetComplex: return "complex";
-    case OnsetPhase: return "phase";
-    case OnsetMKL: return "mkl";
-    case OnsetKL: return "kl";
-    case OnsetSpecFlux: return "specflux";
-    }
+    // In the same order as the enum elements in the header
+    static const char *const names[] = {
+        "energy", "specdiff", "hfc", "complex", "phase", "kl", "mkl", "specflux"
+    };
+    return names[(int)t];
 }
 
 const char *getAubioNameForPitchType(PitchType t)
 {
-    switch (t) {
-    case PitchMComb: return "mcomb";
-    case PitchYinFFT: return "yinfft";
-    case PitchYin: return "yin";
-    case PitchSchmitt: return "schmitt";
-    case PitchFComb: return "fcomb";
-    }
+    // In the same order as the enum elements in the header
+    static const char *const names[] = {
+        "yin", "mcomb", "schmitt", "fcomb", "yinfft"
+    };
+    return names[(int)t];
 }
 

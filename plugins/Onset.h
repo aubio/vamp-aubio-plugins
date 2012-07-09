@@ -60,7 +60,7 @@ protected:
     fvec_t *m_onset;
     aubio_pvoc_t *m_pv;
     aubio_peakpicker_t *m_peakpick;
-    aubio_specdesc_t *m_onsetdet;
+    aubio_onset_t *m_onsetdet;
     OnsetType m_onsettype;
     float m_threshold;
     float m_silence;

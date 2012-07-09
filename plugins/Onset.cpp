@@ -30,7 +30,7 @@ Onset::Onset(float inputSampleRate) :
     m_pv(0),
     m_peakpick(0),
     m_onsetdet(0),
-    m_onsettype(aubio_onset_complex),
+    m_onsettype(OnsetComplex),
     m_threshold(0.3),
     m_silence(-90)
 {
@@ -38,7 +38,7 @@ Onset::Onset(float inputSampleRate) :
 
 Onset::~Onset()
 {
-    if (m_onsetdet) aubio_onsetdetection_free(m_onsetdet);
+    if (m_onsetdet) del_aubio_onset(m_onsetdet);
     if (m_ibuf) del_fvec(m_ibuf);
     if (m_onset) del_fvec(m_onset);
     if (m_fftgrain) del_cvec(m_fftgrain);
@@ -97,9 +97,14 @@ Onset::initialise(size_t channels, size_t stepSize, size_t blockSize)
     m_onset = new_fvec(1);
     m_fftgrain = new_cvec(blockSize);
     m_pv = new_aubio_pvoc(blockSize, stepSize);
-    m_peakpick = new_aubio_peakpicker(m_threshold);
+    m_peakpick = new_aubio_peakpicker();
+    aubio_peakpicker_set_threshold(m_peakpick, m_threshold);
 
-    m_onsetdet = new_aubio_onsetdetection(m_onsettype, blockSize);
+    m_onsetdet = new_aubio_onset
+        (const_cast<char *>(getAubioNameForOnsetType(m_onsettype)),
+         blockSize,
+         stepSize,
+         lrintf(m_inputSampleRate));
     
     m_delay = Vamp::RealTime::frame2RealTime(4 * stepSize,
                                              lrintf(m_inputSampleRate));
@@ -136,7 +141,7 @@ Onset::getParameterDescriptors() const
     desc.name = "Onset Detection Function Type";
     desc.minValue = 0;
     desc.maxValue = 6;
-    desc.defaultValue = (int)aubio_onset_complex;
+    desc.defaultValue = (int)OnsetComplex;
     desc.isQuantized = true;
     desc.quantizeStep = 1;
     desc.valueNames.push_back("Energy Based");
@@ -189,13 +194,13 @@ Onset::setParameter(std::string param, float value)
 {
     if (param == "onsettype") {
         switch (lrintf(value)) {
-        case 0: m_onsettype = aubio_onset_energy; break;
-        case 1: m_onsettype = aubio_onset_specdiff; break;
-        case 2: m_onsettype = aubio_onset_hfc; break;
-        case 3: m_onsettype = aubio_onset_complex; break;
-        case 4: m_onsettype = aubio_onset_phase; break;
-        case 5: m_onsettype = aubio_onset_kl; break;
-        case 6: m_onsettype = aubio_onset_mkl; break;
+        case 0: m_onsettype = OnsetEnergy; break;
+        case 1: m_onsettype = OnsetSpecDiff; break;
+        case 2: m_onsettype = OnsetHFC; break;
+        case 3: m_onsettype = OnsetComplex; break;
+        case 4: m_onsettype = OnsetPhase; break;
+        case 5: m_onsettype = OnsetKL; break;
+        case 6: m_onsettype = OnsetMKL; break;
         }
     } else if (param == "peakpickthreshold") {
         m_threshold = value;
@@ -238,13 +243,10 @@ Onset::process(const float *const *inputBuffers,
                Vamp::RealTime timestamp)
 {
     for (size_t i = 0; i < m_stepSize; ++i) {
-        for (size_t j = 0; j < m_channelCount; ++j) {
-            fvec_write_sample(m_ibuf, inputBuffers[j][i], j, i);
-        }
+        fvec_write_sample(m_ibuf, inputBuffers[0][i], i);
     }
 
-    aubio_pvoc_do(m_pv, m_ibuf, m_fftgrain);
-    aubio_onsetdetection(m_onsetdet, m_fftgrain, m_onset);
+    aubio_onset_do(m_onsetdet, m_ibuf, m_onset);
 
     bool isonset = aubio_peakpick_pimrt(m_onset, m_peakpick);
 
