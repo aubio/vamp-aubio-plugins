@@ -24,9 +24,8 @@ using std::vector;
 using std::cerr;
 using std::endl;
 
-Notes::Notes(float inputSampleRate, unsigned int apiVersion) :
+Notes::Notes(float inputSampleRate) :
     Plugin(inputSampleRate),
-    m_apiVersion(apiVersion),
     m_ibuf(0),
     m_fftgrain(0),
     m_onset(0),
@@ -45,12 +44,6 @@ Notes::Notes(float inputSampleRate, unsigned int apiVersion) :
     m_avoidLeaps(false),
     m_prevPitch(-1)
 {
-    if (apiVersion == 1) {
-        cerr << "vamp-aubio: WARNING: using compatibility version 1 of the Vamp API for note\n"
-             << "tracker plugin: upgrade your host to v2 for proper duration support" << endl;
-    } else {
-        cerr << "vamp-aubio: NOTE: using v2 API for true durations" << endl;
-    }
 }
 
 Notes::~Notes()
@@ -91,8 +84,7 @@ Notes::getMaker() const
 int
 Notes::getPluginVersion() const
 {
-    if (m_apiVersion == 1) return 2;
-    return 3;
+    return 4;
 }
 
 string
@@ -330,17 +322,10 @@ Notes::getOutputDescriptors() const
     d.unit = "Hz";
     d.hasFixedBinCount = true;
 
-    if (m_apiVersion == 1) {
-        d.binCount = 3;
-        d.binNames.push_back("Frequency");
-        d.binNames.push_back("Duration");
-        d.binNames.push_back("Velocity");
-    } else {
-        d.binCount = 2;
-        d.binNames.push_back("Frequency");
-        d.binNames.push_back("Velocity");
-        d.hasDuration = true;
-    }
+    d.binCount = 2;
+    d.binNames.push_back("Frequency");
+    d.binNames.push_back("Velocity");
+    d.hasDuration = true;
 
     d.hasKnownExtents = false;
     d.isQuantized = false;
@@ -448,17 +433,12 @@ Notes::pushNote(FeatureSet &fs, const Vamp::RealTime &offTime)
     feature.timestamp = m_currentOnset - m_delay;
     feature.values.push_back(freq);
 
-    if (m_apiVersion == 1) {
-        feature.values.push_back
-            (Vamp::RealTime::realTime2Frame
-             (offTime, lrintf(m_inputSampleRate)) -
-             Vamp::RealTime::realTime2Frame
-             (m_currentOnset, lrintf(m_inputSampleRate)));
-        feature.hasDuration = false;
-    } else {
-        feature.hasDuration = true;
-        feature.duration = offTime - m_currentOnset;
-    }
+    feature.values.push_back
+        (Vamp::RealTime::realTime2Frame
+         (offTime, lrintf(m_inputSampleRate)) -
+         Vamp::RealTime::realTime2Frame
+         (m_currentOnset, lrintf(m_inputSampleRate)));
+    feature.hasDuration = false;
 
     feature.values.push_back(m_currentLevel);
     fs[0].push_back(feature);

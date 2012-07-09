@@ -83,7 +83,7 @@ Tempo::getMaker() const
 int
 Tempo::getPluginVersion() const
 {
-    return 1;
+    return 2;
 }
 
 string

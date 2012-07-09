@@ -20,6 +20,8 @@
 #include <vamp-sdk/Plugin.h>
 #include <aubio/aubio.h>
 
+#include "Types.h"
+
 class Pitch : public Vamp::Plugin
 {
 public:

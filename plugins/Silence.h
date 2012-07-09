@@ -23,7 +23,7 @@
 class Silence : public Vamp::Plugin
 {
 public:
-    Silence(float inputSampleRate, unsigned int apiVersion);
+    Silence(float inputSampleRate);
     virtual ~Silence();
 
     bool initialise(size_t channels, size_t stepSize, size_t blockSize);
@@ -53,7 +53,6 @@ public:
     FeatureSet getRemainingFeatures();
 
 protected:
-    unsigned int m_apiVersion;
     fvec_t *m_ibuf;
     fvec_t *m_pbuf;
     smpl_t **m_tmpptrs;

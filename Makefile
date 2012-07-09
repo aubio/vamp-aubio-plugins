@@ -5,13 +5,13 @@ PLUGINDIR	= plugins
 
 # Compile flags
 #
-CXXFLAGS	:= -I/Users/cannam/code/inst/include $(CXXFLAGS) -fPIC -DNDEBUG -O2 -Wall -I.
+CXXFLAGS	:= -I../ -I../inst/include $(CXXFLAGS) -fPIC -DNDEBUG -O2 -Wall -I.
 
 # Libraries required for the plugins.  Note that we can (and actively
 # want to) statically link libstdc++, because our plugin exposes only
 # a C API so there are no boundary compatibility problems.
 #
-PLUGIN_LIBS	= -L/Users/cannam/code/inst/lib -lvamp-sdk -laubio 
+PLUGIN_LIBS	= -L../inst/lib -lvamp-sdk -laubio 
 
 # Flags required to tell the compiler to make a dynamically loadable object
 #

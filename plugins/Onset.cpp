@@ -74,7 +74,7 @@ Onset::getMaker() const
 int
 Onset::getPluginVersion() const
 {
-    return 1;
+    return 2;
 }
 
 string

@@ -32,8 +32,7 @@ Pitch::Pitch(float inputSampleRate) :
     Plugin(inputSampleRate),
     m_ibuf(0),
     m_pitchdet(0),
-    m_pitchtype(aubio_pitch_yinfft),
-    m_pitchmode(aubio_pitchm_freq),
+    m_pitchtype(PitchYinFFT),
     m_minfreq(getFrequencyForMIDIPitch(32)),
     m_maxfreq(getFrequencyForMIDIPitch(95)),
     m_silence(-90),
@@ -46,7 +45,7 @@ Pitch::Pitch(float inputSampleRate) :
 
 Pitch::~Pitch()
 {
-    if (m_pitchdet) del_aubio_pitchdetection(m_pitchdet);
+    if (m_pitchdet) del_aubio_pitch(m_pitchdet);
     if (m_ibuf) del_fvec(m_ibuf);
 }
 
@@ -77,7 +76,7 @@ Pitch::getMaker() const
 int
 Pitch::getPluginVersion() const
 {
-    return 2;
+    return 3;
 }
 
 string
