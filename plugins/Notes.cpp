@@ -27,16 +27,15 @@ using std::endl;
 Notes::Notes(float inputSampleRate) :
     Plugin(inputSampleRate),
     m_ibuf(0),
-    m_fftgrain(0),
     m_onset(0),
-    m_pv(0),
-    m_peakpick(0),
+    m_pitch(0),
     m_onsetdet(0),
     m_onsettype(OnsetComplex),
     m_pitchdet(0),
     m_pitchtype(PitchYinFFT),
     m_threshold(0.3),
-    m_silence(-90),
+    m_silence(-70),
+    m_minioi(4),
     m_median(6),
     m_minpitch(27),
     m_maxpitch(95),
@@ -52,9 +51,7 @@ Notes::~Notes()
     if (m_pitchdet) del_aubio_pitch(m_pitchdet);
     if (m_ibuf) del_fvec(m_ibuf);
     if (m_onset) del_fvec(m_onset);
-    if (m_fftgrain) del_cvec(m_fftgrain);
-    if (m_pv) del_aubio_pvoc(m_pv);
-    if (m_peakpick) del_aubio_peakpicker(m_peakpick);
+    if (m_pitch) del_fvec(m_pitch);
 }
 
 string
@@ -104,27 +101,27 @@ Notes::initialise(size_t channels, size_t stepSize, size_t blockSize)
     m_stepSize = stepSize;
     m_blockSize = blockSize;
 
-    size_t processingBlockSize;
-    if (m_onsettype == OnsetEnergy ||
-        m_onsettype == OnsetHFC) {
-        processingBlockSize = stepSize * 2;
-    } else {
-        processingBlockSize = stepSize * 4;
-    }
-
     m_ibuf = new_fvec(stepSize);
     m_onset = new_fvec(1);
-    m_fftgrain = new_cvec(processingBlockSize);
-    m_pv = new_aubio_pvoc(processingBlockSize, stepSize);
-    m_peakpick = new_aubio_peakpicker(m_threshold);
+    m_pitch = new_fvec(1);
 
-    m_onsetdet = new_aubio_onsetdetection(m_onsettype, processingBlockSize);
+    m_onsetdet = new_aubio_onset
+        (const_cast<char *>(getAubioNameForOnsetType(m_onsettype)),
+         blockSize,
+         stepSize,
+         lrintf(m_inputSampleRate));
+    
+    aubio_onset_set_threshold(m_onsetdet, m_threshold);
+    aubio_onset_set_silence(m_onsetdet, m_silence);
+    aubio_onset_set_minioi(m_onsetdet, m_minioi);
 
-    m_pitchdet = new_aubio_pitchdetection(processingBlockSize * 4,
-                                          stepSize,
-                                          lrintf(m_inputSampleRate),
-                                          m_pitchtype,
-                                          m_pitchmode);
+    m_pitchdet = new_aubio_pitch
+        (const_cast<char *>(getAubioNameForPitchType(m_pitchtype)),
+         blockSize,
+         stepSize,
+         lrintf(m_inputSampleRate));
+
+    aubio_pitch_set_unit(m_pitchdet, "freq");
 
     m_count = 0;
     m_delay = Vamp::RealTime::frame2RealTime((4 + m_median) * m_stepSize,
@@ -162,8 +159,8 @@ Notes::getParameterDescriptors() const
     desc.identifier = "onsettype";
     desc.name = "Onset Detection Function Type";
     desc.minValue = 0;
-    desc.maxValue = 6;
-    desc.defaultValue = (int)aubio_onset_complex;
+    desc.maxValue = 7;
+    desc.defaultValue = (int)OnsetComplex;
     desc.isQuantized = true;
     desc.quantizeStep = 1;
     desc.valueNames.push_back("Energy Based");
@@ -173,6 +170,7 @@ Notes::getParameterDescriptors() const
     desc.valueNames.push_back("Phase Deviation");
     desc.valueNames.push_back("Kullback-Liebler");
     desc.valueNames.push_back("Modified Kullback-Liebler");
+    desc.valueNames.push_back("Spectral Flux");
     list.push_back(desc);
 
     desc = ParameterDescriptor();
@@ -180,7 +178,7 @@ Notes::getParameterDescriptors() const
     desc.name = "Pitch Detection Function Type";
     desc.minValue = 0;
     desc.maxValue = 4;
-    desc.defaultValue = (int)aubio_pitch_yinfft;
+    desc.defaultValue = (int)PitchYinFFT;
     desc.isQuantized = true;
     desc.quantizeStep = 1;
     desc.valueNames.push_back("YIN Frequency Estimator");
@@ -246,9 +244,20 @@ Notes::getParameterDescriptors() const
     desc.name = "Silence Threshold";
     desc.minValue = -120;
     desc.maxValue = 0;
-    desc.defaultValue = -90;
+    desc.defaultValue = -70;
     desc.unit = "dB";
     desc.isQuantized = false;
+    list.push_back(desc);
+
+    desc = ParameterDescriptor();
+    desc.identifier = "minioi";
+    desc.name = "Minimum Inter-Onset Interval";
+    desc.minValue = 0;
+    desc.maxValue = 40;
+    desc.defaultValue = 4;
+    desc.unit = "ms";
+    desc.isQuantized = true;
+    desc.quantizeStep = 1;
     list.push_back(desc);
 
     return list;
@@ -273,6 +282,8 @@ Notes::getParameter(std::string param) const
         return m_wrapRange ? 1.0 : 0.0;
     } else if (param == "avoidleaps") {
         return m_avoidLeaps ? 1.0 : 0.0;
+    } else if (param == "minioi") {
+        return m_minioi;
     } else {
         return 0.0;
     }
@@ -283,21 +294,22 @@ Notes::setParameter(std::string param, float value)
 {
     if (param == "onsettype") {
         switch (lrintf(value)) {
-        case 0: m_onsettype = aubio_onset_energy; break;
-        case 1: m_onsettype = aubio_onset_specdiff; break;
-        case 2: m_onsettype = aubio_onset_hfc; break;
-        case 3: m_onsettype = aubio_onset_complex; break;
-        case 4: m_onsettype = aubio_onset_phase; break;
-        case 5: m_onsettype = aubio_onset_kl; break;
-        case 6: m_onsettype = aubio_onset_mkl; break;
+        case 0: m_onsettype = OnsetEnergy; break;
+        case 1: m_onsettype = OnsetSpecDiff; break;
+        case 2: m_onsettype = OnsetHFC; break;
+        case 3: m_onsettype = OnsetComplex; break;
+        case 4: m_onsettype = OnsetPhase; break;
+        case 5: m_onsettype = OnsetKL; break;
+        case 6: m_onsettype = OnsetMKL; break;
+        case 7: m_onsettype = OnsetSpecFlux; break;
         }
     } else if (param == "pitchtype") {
         switch (lrintf(value)) {
-        case 0: m_pitchtype = aubio_pitch_yin; break;
-        case 1: m_pitchtype = aubio_pitch_mcomb; break;
-        case 2: m_pitchtype = aubio_pitch_schmitt; break;
-        case 3: m_pitchtype = aubio_pitch_fcomb; break;
-        case 4: m_pitchtype = aubio_pitch_yinfft; break;
+        case 0: m_pitchtype = PitchYin; break;
+        case 1: m_pitchtype = PitchMComb; break;
+        case 2: m_pitchtype = PitchSchmitt; break;
+        case 3: m_pitchtype = PitchFComb; break;
+        case 4: m_pitchtype = PitchYinFFT; break;
         }
     } else if (param == "peakpickthreshold") {
         m_threshold = value;
@@ -311,6 +323,8 @@ Notes::setParameter(std::string param, float value)
         m_wrapRange = (value > 0.5);
     } else if (param == "avoidleaps") {
         m_avoidLeaps = (value > 0.5);
+    } else if (param == "minioi") {
+        m_minioi = value;
     }
 }
 
@@ -343,17 +357,14 @@ Notes::FeatureSet
 Notes::process(const float *const *inputBuffers, Vamp::RealTime timestamp)
 {
     for (size_t i = 0; i < m_stepSize; ++i) {
-        for (size_t j = 0; j < m_channelCount; ++j) {
-            fvec_write_sample(m_ibuf, inputBuffers[j][i], j, i);
-        }
+        fvec_write_sample(m_ibuf, inputBuffers[0][i], i);
     }
 
-    aubio_pvoc_do(m_pv, m_ibuf, m_fftgrain);
-    aubio_onsetdetection(m_onsetdet, m_fftgrain, m_onset);
+    aubio_onset_do(m_onsetdet, m_ibuf, m_onset);
+    aubio_pitch_do(m_pitchdet, m_ibuf, m_pitch);
 
-    bool isonset = aubio_peakpick_pimrt(m_onset, m_peakpick);
-
-    float frequency = aubio_pitchdetection(m_pitchdet, m_ibuf);
+    bool isonset = m_onset->data[0];
+    float frequency = m_pitch->data[0];
 
     m_notebuf.push_back(frequency);
     if (m_notebuf.size() > m_median) m_notebuf.pop_front();
