@@ -55,7 +55,6 @@ public:
 protected:
     fvec_t *m_ibuf;
     fvec_t *m_pbuf;
-    smpl_t **m_tmpptrs;
     float m_threshold;
     size_t m_stepSize;
     size_t m_blockSize;

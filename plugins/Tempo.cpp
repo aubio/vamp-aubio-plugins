@@ -22,37 +22,23 @@ using std::vector;
 using std::cerr;
 using std::endl;
 
-//#define HAVE_AUBIO_LOCKED_TEMPO_HACK
-
 Tempo::Tempo(float inputSampleRate) :
     Plugin(inputSampleRate),
     m_ibuf(0),
-    m_fftgrain(0),
-    m_onset(0),
-    m_pv(0),
-    m_peakpick(0),
-    m_onsetdet(0),
-    m_onsettype(aubio_onset_specdiff),
-    m_beattracking(0),
-    m_dfframe(0),
-    m_btout(0),
-    m_btcounter(0),
+    m_beat(0),
+    m_bpm(0),
+    m_onsettype(OnsetComplex),
+    m_tempo(0),
     m_threshold(0.3),
-    m_silence(-90)
+    m_silence(-70)
 {
 }
 
 Tempo::~Tempo()
 {
-    if (m_onsetdet) aubio_onsetdetection_free(m_onsetdet);
     if (m_ibuf) del_fvec(m_ibuf);
-    if (m_onset) del_fvec(m_onset);
-    if (m_fftgrain) del_cvec(m_fftgrain);
-    if (m_pv) del_aubio_pvoc(m_pv);
-    if (m_peakpick) del_aubio_peakpicker(m_peakpick);
-    if (m_beattracking) del_aubio_beattracking(m_beattracking);
-    if (m_dfframe) del_fvec(m_dfframe);
-    if (m_btout) del_fvec(m_btout);
+    if (m_beat) del_fvec(m_beat);
+    if (m_tempo) del_aubio_tempo(m_tempo);
 }
 
 string
@@ -103,23 +89,21 @@ Tempo::initialise(size_t channels, size_t stepSize, size_t blockSize)
     m_blockSize = blockSize;
 
     m_ibuf = new_fvec(stepSize);
-    m_onset = new_fvec(1);
-    m_fftgrain = new_cvec(blockSize);
-    m_pv = new_aubio_pvoc(blockSize, stepSize);
-    m_peakpick = new_aubio_peakpicker(m_threshold);
-
-    m_onsetdet = new_aubio_onsetdetection(m_onsettype, blockSize);
+    m_beat = new_fvec(2);
     
     m_delay = Vamp::RealTime::frame2RealTime(3 * stepSize,
                                              lrintf(m_inputSampleRate));
 
     m_lastBeat = Vamp::RealTime::zeroTime - m_delay - m_delay;
 
-    m_winlen = 512*512/stepSize;
-    m_dfframe = new_fvec(m_winlen,channels);
-    m_btstep = m_winlen/4;
-    m_btout = new_fvec(m_btstep,channels);
-    m_beattracking = new_aubio_beattracking(m_winlen,channels);
+    m_tempo = new_aubio_tempo
+        (const_cast<char *>(getAubioNameForOnsetType(m_onsettype)),
+         blockSize,
+         stepSize,
+         lrintf(m_inputSampleRate));
+
+    aubio_tempo_set_silence(m_tempo, m_silence);
+    aubio_tempo_set_threshold(m_tempo, m_threshold);
 
     return true;
 }
@@ -150,8 +134,8 @@ Tempo::getParameterDescriptors() const
     desc.identifier = "onsettype";
     desc.name = "Onset Detection Function Type";
     desc.minValue = 0;
-    desc.maxValue = 6;
-    desc.defaultValue = (int)aubio_onset_complex;
+    desc.maxValue = 7;
+    desc.defaultValue = (int)OnsetComplex;
     desc.isQuantized = true;
     desc.quantizeStep = 1;
     desc.valueNames.push_back("Energy Based");
@@ -161,6 +145,7 @@ Tempo::getParameterDescriptors() const
     desc.valueNames.push_back("Phase Deviation");
     desc.valueNames.push_back("Kullback-Liebler");
     desc.valueNames.push_back("Modified Kullback-Liebler");
+    desc.valueNames.push_back("Spectral Flux");
     list.push_back(desc);
 
     desc = ParameterDescriptor();
@@ -177,7 +162,7 @@ Tempo::getParameterDescriptors() const
     desc.name = "Silence Threshold";
     desc.minValue = -120;
     desc.maxValue = 0;
-    desc.defaultValue = -90;
+    desc.defaultValue = -70;
     desc.unit = "dB";
     desc.isQuantized = false;
     list.push_back(desc);
@@ -204,13 +189,14 @@ Tempo::setParameter(std::string param, float value)
 {
     if (param == "onsettype") {
         switch (lrintf(value)) {
-        case 0: m_onsettype = aubio_onset_energy; break;
-        case 1: m_onsettype = aubio_onset_specdiff; break;
-        case 2: m_onsettype = aubio_onset_hfc; break;
-        case 3: m_onsettype = aubio_onset_complex; break;
-        case 4: m_onsettype = aubio_onset_phase; break;
-        case 5: m_onsettype = aubio_onset_kl; break;
-        case 6: m_onsettype = aubio_onset_mkl; break;
+        case 0: m_onsettype = OnsetEnergy; break;
+        case 1: m_onsettype = OnsetSpecDiff; break;
+        case 2: m_onsettype = OnsetHFC; break;
+        case 3: m_onsettype = OnsetComplex; break;
+        case 4: m_onsettype = OnsetPhase; break;
+        case 5: m_onsettype = OnsetKL; break;
+        case 6: m_onsettype = OnsetMKL; break;
+        case 7: m_onsettype = OnsetSpecFlux; break;
         }
     } else if (param == "peakpickthreshold") {
         m_threshold = value;
@@ -234,7 +220,6 @@ Tempo::getOutputDescriptors() const
     d.sampleRate = 0;
     list.push_back(d);
 
-#ifdef HAVE_AUBIO_LOCKED_TEMPO_HACK
     d.identifier = "tempo";
     d.name = "Tempo";
     d.unit = "bpm";
@@ -244,7 +229,6 @@ Tempo::getOutputDescriptors() const
     d.isQuantized = false;
     d.sampleType = OutputDescriptor::OneSamplePerStep;
     list.push_back(d);
-#endif
 
     return list;
 }
@@ -253,48 +237,14 @@ Tempo::FeatureSet
 Tempo::process(const float *const *inputBuffers, Vamp::RealTime timestamp)
 {
     for (size_t i = 0; i < m_stepSize; ++i) {
-        for (size_t j = 0; j < m_channelCount; ++j) {
-            fvec_write_sample(m_ibuf, inputBuffers[j][i], j, i);
-        }
+        fvec_write_sample(m_ibuf, inputBuffers[0][i], i);
     }
 
-    aubio_pvoc_do(m_pv, m_ibuf, m_fftgrain);
-    aubio_onsetdetection(m_onsetdet, m_fftgrain, m_onset);
+    aubio_tempo_do(m_tempo, m_ibuf, m_beat);
 
-#ifdef HAVE_AUBIO_LOCKED_TEMPO_HACK
-    float locked_tempo = 0;
-#endif
+    bool istactus = m_beat->data[0];
 
-    if ( m_btcounter == m_btstep - 1 ) {
-#ifdef HAVE_AUBIO_LOCKED_TEMPO_HACK
-        aubio_beattracking_do(m_beattracking,m_dfframe,m_btout,&locked_tempo);
-#else
-        aubio_beattracking_do(m_beattracking,m_dfframe,m_btout);
-#endif
-        /* rotate dfframe */
-        for (size_t i = 0 ; i < m_winlen - m_btstep; i++ ) 
-                m_dfframe->data[0][i] = m_dfframe->data[0][i+m_btstep];
-        for (size_t i = m_winlen - m_btstep ; i < m_winlen; i++ ) 
-                m_dfframe->data[0][i] = 0.;
-                
-        m_btcounter = -1;
-    }
-    m_btcounter++;
-    bool isonset = aubio_peakpick_pimrt_wt( m_onset, m_peakpick, 
-        &(m_dfframe->data[0][m_winlen - m_btstep + m_btcounter]));
-    bool istactus = 0;
-
-    /* check if any of the predicted beat correspond to the current time */
-    for (size_t i = 1; i < m_btout->data[0][0]; i++ ) { 
-            if (m_btcounter == m_btout->data[0][i]) {
-                    if (aubio_silence_detection(m_ibuf, m_silence)) {
-                            isonset  = false;
-                            istactus = false;
-                    } else {
-                            istactus = true;
-                    }
-            }
-    }
+    m_bpm = aubio_tempo_get_bpm(m_tempo);
 
     FeatureSet returnFeatures;
 
@@ -309,16 +259,12 @@ Tempo::process(const float *const *inputBuffers, Vamp::RealTime timestamp)
         }
     }
 
-#ifdef HAVE_AUBIO_LOCKED_TEMPO_HACK
-    if (locked_tempo >= 30 && locked_tempo <= 206) {
-        if (locked_tempo > 145) locked_tempo /= 2;
-        std::cerr << "Locked tempo: " << locked_tempo << std::endl;
+    if (m_bpm >= 30 && m_bpm <= 206) {
         Feature tempo;
         tempo.hasTimestamp = false;
-        tempo.values.push_back(locked_tempo);
+        tempo.values.push_back(m_bpm);
         returnFeatures[1].push_back(tempo);
     }
-#endif
 
     return returnFeatures;
 }

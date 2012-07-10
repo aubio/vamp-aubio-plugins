@@ -55,18 +55,10 @@ public:
 
 protected:
     fvec_t *m_ibuf;
-    cvec_t *m_fftgrain;
-    fvec_t *m_onset;
-    aubio_pvoc_t *m_pv;
-    aubio_peakpicker_t *m_peakpick;
-    aubio_onset_t *m_onsetdet;
+    fvec_t *m_beat;
+    smpl_t m_bpm;
     OnsetType m_onsettype;
     aubio_tempo_t *m_tempo;
-    fvec_t *m_dfframe;
-    fvec_t *m_btout;
-    uint_t m_winlen;
-    sint_t m_btstep;
-    sint_t m_btcounter;
     float m_threshold;
     float m_silence;
     size_t m_stepSize;

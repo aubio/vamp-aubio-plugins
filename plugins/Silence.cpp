@@ -25,7 +25,6 @@ Silence::Silence(float inputSampleRate) :
     Plugin(inputSampleRate),
     m_ibuf(0),
     m_pbuf(0),
-    m_tmpptrs(0),
     m_threshold(-80),
     m_prevSilent(false),
     m_first(true)
@@ -36,7 +35,6 @@ Silence::~Silence()
 {
     if (m_ibuf) del_fvec(m_ibuf);
     if (m_pbuf) del_fvec(m_pbuf);
-    if (m_tmpptrs) delete[] m_tmpptrs;
 }
 
 string
@@ -88,7 +86,6 @@ Silence::initialise(size_t channels, size_t stepSize, size_t blockSize)
 
     m_ibuf = new_fvec(stepSize);
     m_pbuf = new_fvec(stepSize);
-    m_tmpptrs = new smpl_t *[channels];
 
     return true;
 }
@@ -199,9 +196,7 @@ Silence::process(const float *const *inputBuffers,
                  Vamp::RealTime timestamp)
 {
     for (size_t i = 0; i < m_stepSize; ++i) {
-        for (size_t j = 0; j < m_channelCount; ++j) {
-            fvec_write_sample(m_ibuf, inputBuffers[j][i], j, i);
-        }
+        fvec_write_sample(m_ibuf, inputBuffers[0][i], i);
     }
 
     bool silent = aubio_silence_detection(m_ibuf, m_threshold);
@@ -221,13 +216,9 @@ Silence::process(const float *const *inputBuffers,
 
             fvec_t vec;
             vec.length = incr * 4;
-            vec.channels = m_channelCount;
-            vec.data = m_tmpptrs;
             
             for (size_t i = 0; i < m_stepSize - incr * 4; i += incr) {
-                for (size_t j = 0; j < m_channelCount; ++j) {
-                    m_tmpptrs[j] = m_ibuf->data[j] + i;
-                }
+                vec.data = m_ibuf->data + i;
                 bool subsilent = aubio_silence_detection(&vec, m_threshold);
                 if (silent == subsilent) {
                     off = i;
@@ -237,9 +228,7 @@ Silence::process(const float *const *inputBuffers,
 
             if (silent && (off == 0)) {
                 for (size_t i = 0; i < m_stepSize - incr; i += incr) {
-                    for (size_t j = 0; j < m_channelCount; ++j) {
-                        m_tmpptrs[j] = m_pbuf->data[j] + m_stepSize - i - incr;
-                    }
+                    vec.data = m_pbuf->data + m_stepSize - i - incr;
                     bool subsilent = aubio_silence_detection(&vec, m_threshold);
                     if (!subsilent) {
                         off = -(long)i;
@@ -284,7 +273,7 @@ Silence::process(const float *const *inputBuffers,
     // swap ibuf and pbuf data pointers, so that this block's data is
     // available in pbuf when processing the next block, without
     // having to allocate new storage for it
-    smpl_t **tmpdata = m_ibuf->data;
+    smpl_t *tmpdata = m_ibuf->data;
     m_ibuf->data = m_pbuf->data;
     m_pbuf->data = tmpdata;
 

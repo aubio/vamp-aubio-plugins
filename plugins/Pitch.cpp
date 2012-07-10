@@ -31,6 +31,7 @@ getFrequencyForMIDIPitch(int midiPitch)
 Pitch::Pitch(float inputSampleRate) :
     Plugin(inputSampleRate),
     m_ibuf(0),
+    m_obuf(0),
     m_pitchdet(0),
     m_pitchtype(PitchYinFFT),
     m_minfreq(getFrequencyForMIDIPitch(32)),
@@ -105,7 +106,7 @@ Pitch::initialise(size_t channels, size_t stepSize, size_t blockSize)
          stepSize,
          lrintf(m_inputSampleRate));
 
-    aubio_pitch_set_unit(m_pitchdet, "freq");
+    aubio_pitch_set_unit(m_pitchdet, const_cast<char *>("freq"));
 
     return true;
 }

@@ -121,7 +121,7 @@ Notes::initialise(size_t channels, size_t stepSize, size_t blockSize)
          stepSize,
          lrintf(m_inputSampleRate));
 
-    aubio_pitch_set_unit(m_pitchdet, "freq");
+    aubio_pitch_set_unit(m_pitchdet, const_cast<char *>("freq"));
 
     m_count = 0;
     m_delay = Vamp::RealTime::frame2RealTime((4 + m_median) * m_stepSize,
@@ -193,7 +193,7 @@ Notes::getParameterDescriptors() const
     desc.name = "Minimum Pitch";
     desc.minValue = 0;
     desc.maxValue = 127;
-    desc.defaultValue = 32;
+    desc.defaultValue = 27;
     desc.unit = "MIDI units";
     desc.isQuantized = true;
     desc.quantizeStep = 1;

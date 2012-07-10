@@ -5,23 +5,25 @@ PLUGINDIR	= plugins
 
 # Compile flags
 #
-CXXFLAGS	:= -I../ -I../inst/include $(CXXFLAGS) -fPIC -DNDEBUG -O2 -Wall -I.
+#CXXFLAGS	:= -I../ -I../inst/include $(CXXFLAGS) -fPIC -DNDEBUG -O2 -Wall -I.
+CXXFLAGS	:= -I../ -I../inst/include $(CXXFLAGS) -fPIC -DDEBUG -g -Wall -I.
 
-# Libraries required for the plugins.  Note that we can (and actively
-# want to) statically link libstdc++, because our plugin exposes only
-# a C API so there are no boundary compatibility problems.
+# Libraries required for the plugins.
 #
-PLUGIN_LIBS	= -L../inst/lib -lvamp-sdk -laubio 
+#PLUGIN_LIBS	= -L../inst/lib -lvamp-sdk -laubio 
+PLUGIN_LIBS	= ../vamp-plugin-sdk/libvamp-sdk.a /usr/local/lib/libaubio.a /usr/lib/libfftw3f.a
 
 # Flags required to tell the compiler to make a dynamically loadable object
 #
+PLUGIN_LDFLAGS	= -shared -Wl,-Bsymbolic -Wl,--version-script=vamp-plugin.map
 
 # File extension for a dynamically loadable object
 #
+PLUGIN_EXT	= .so
 
 ## For OS/X with g++:
-PLUGIN_LDFLAGS	= -dynamiclib -exported_symbols_list=vamp-plugin.list
-PLUGIN_EXT	= .dylib
+#PLUGIN_LDFLAGS	= -dynamiclib -exported_symbols_list=vamp-plugin.list
+#PLUGIN_EXT	= .dylib
 
 
 ### End of user-serviceable parts
