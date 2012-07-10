@@ -37,7 +37,7 @@ Notes::Notes(float inputSampleRate) :
     m_silence(-70),
     m_minioi(4),
     m_median(6),
-    m_minpitch(27),
+    m_minpitch(32),
     m_maxpitch(95),
     m_wrapRange(false),
     m_avoidLeaps(false),
@@ -193,7 +193,7 @@ Notes::getParameterDescriptors() const
     desc.name = "Minimum Pitch";
     desc.minValue = 0;
     desc.maxValue = 127;
-    desc.defaultValue = 27;
+    desc.defaultValue = 32;
     desc.unit = "MIDI units";
     desc.isQuantized = true;
     desc.quantizeStep = 1;
