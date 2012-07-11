@@ -105,10 +105,21 @@ Notes::initialise(size_t channels, size_t stepSize, size_t blockSize)
     m_onset = new_fvec(1);
     m_pitch = new_fvec(1);
 
+    reset();
+
+    return true;
+}
+
+void
+Notes::reset()
+{
+    if (m_onsetdet) del_aubio_onset(m_onsetdet);
+    if (m_pitchdet) del_aubio_pitch(m_pitchdet);
+
     m_onsetdet = new_aubio_onset
         (const_cast<char *>(getAubioNameForOnsetType(m_onsettype)),
-         blockSize,
-         stepSize,
+         m_blockSize,
+         m_stepSize,
          lrintf(m_inputSampleRate));
     
     aubio_onset_set_threshold(m_onsetdet, m_threshold);
@@ -117,8 +128,8 @@ Notes::initialise(size_t channels, size_t stepSize, size_t blockSize)
 
     m_pitchdet = new_aubio_pitch
         (const_cast<char *>(getAubioNameForPitchType(m_pitchtype)),
-         blockSize,
-         stepSize,
+         m_blockSize,
+         m_stepSize,
          lrintf(m_inputSampleRate));
 
     aubio_pitch_set_unit(m_pitchdet, const_cast<char *>("freq"));
@@ -129,13 +140,6 @@ Notes::initialise(size_t channels, size_t stepSize, size_t blockSize)
     m_currentOnset = Vamp::RealTime::zeroTime;
     m_haveCurrent = false;
     m_prevPitch = -1;
-
-    return true;
-}
-
-void
-Notes::reset()
-{
 }
 
 size_t

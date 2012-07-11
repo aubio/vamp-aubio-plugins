@@ -100,13 +100,7 @@ Pitch::initialise(size_t channels, size_t stepSize, size_t blockSize)
     m_ibuf = new_fvec(stepSize);
     m_obuf = new_fvec(1);
 
-    m_pitchdet = new_aubio_pitch
-        (const_cast<char *>(getAubioNameForPitchType(m_pitchtype)),
-         blockSize,
-         stepSize,
-         lrintf(m_inputSampleRate));
-
-    aubio_pitch_set_unit(m_pitchdet, const_cast<char *>("freq"));
+    reset();
 
     return true;
 }
@@ -114,6 +108,15 @@ Pitch::initialise(size_t channels, size_t stepSize, size_t blockSize)
 void
 Pitch::reset()
 {
+    if (m_pitchdet) del_aubio_pitch(m_pitchdet);
+
+    m_pitchdet = new_aubio_pitch
+        (const_cast<char *>(getAubioNameForPitchType(m_pitchtype)),
+         m_blockSize,
+         m_stepSize,
+         lrintf(m_inputSampleRate));
+
+    aubio_pitch_set_unit(m_pitchdet, const_cast<char *>("freq"));
 }
 
 size_t

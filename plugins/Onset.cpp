@@ -91,20 +91,7 @@ Onset::initialise(size_t channels, size_t stepSize, size_t blockSize)
     m_ibuf = new_fvec(stepSize);
     m_onset = new_fvec(1);
 
-    m_onsetdet = new_aubio_onset
-        (const_cast<char *>(getAubioNameForOnsetType(m_onsettype)),
-         blockSize,
-         stepSize,
-         lrintf(m_inputSampleRate));
-    
-    aubio_onset_set_threshold(m_onsetdet, m_threshold);
-    aubio_onset_set_silence(m_onsetdet, m_silence);
-    aubio_onset_set_minioi(m_onsetdet, m_minioi);
-
-    m_delay = Vamp::RealTime::frame2RealTime(4 * stepSize,
-                                             lrintf(m_inputSampleRate));
-
-    m_lastOnset = Vamp::RealTime::zeroTime - m_delay - m_delay;
+    reset();
 
     return true;
 }
@@ -112,6 +99,22 @@ Onset::initialise(size_t channels, size_t stepSize, size_t blockSize)
 void
 Onset::reset()
 {
+    if (m_onsetdet) del_aubio_onset(m_onsetdet);
+
+    m_onsetdet = new_aubio_onset
+        (const_cast<char *>(getAubioNameForOnsetType(m_onsettype)),
+         m_blockSize,
+         m_stepSize,
+         lrintf(m_inputSampleRate));
+    
+    aubio_onset_set_threshold(m_onsetdet, m_threshold);
+    aubio_onset_set_silence(m_onsetdet, m_silence);
+    aubio_onset_set_minioi(m_onsetdet, m_minioi);
+
+    m_delay = Vamp::RealTime::frame2RealTime(4 * m_stepSize,
+                                             lrintf(m_inputSampleRate));
+
+    m_lastOnset = Vamp::RealTime::zeroTime - m_delay - m_delay;
 }
 
 size_t

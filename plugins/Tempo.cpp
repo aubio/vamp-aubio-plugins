@@ -94,16 +94,7 @@ Tempo::initialise(size_t channels, size_t stepSize, size_t blockSize)
     m_delay = Vamp::RealTime::frame2RealTime(3 * stepSize,
                                              lrintf(m_inputSampleRate));
 
-    m_lastBeat = Vamp::RealTime::zeroTime - m_delay - m_delay;
-
-    m_tempo = new_aubio_tempo
-        (const_cast<char *>(getAubioNameForOnsetType(m_onsettype)),
-         blockSize,
-         stepSize,
-         lrintf(m_inputSampleRate));
-
-    aubio_tempo_set_silence(m_tempo, m_silence);
-    aubio_tempo_set_threshold(m_tempo, m_threshold);
+    reset();
 
     return true;
 }
@@ -111,6 +102,18 @@ Tempo::initialise(size_t channels, size_t stepSize, size_t blockSize)
 void
 Tempo::reset()
 {
+    if (m_tempo) del_aubio_tempo(m_tempo);
+
+    m_lastBeat = Vamp::RealTime::zeroTime - m_delay - m_delay;
+
+    m_tempo = new_aubio_tempo
+        (const_cast<char *>(getAubioNameForOnsetType(m_onsettype)),
+         m_blockSize,
+         m_stepSize,
+         lrintf(m_inputSampleRate));
+
+    aubio_tempo_set_silence(m_tempo, m_silence);
+    aubio_tempo_set_threshold(m_tempo, m_threshold);
 }
 
 size_t
