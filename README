@@ -12,11 +12,12 @@ of audio that are quieter than a given RMS signal level.  These
 plugins compile into a single plugin library called vamp-aubio.so (the
 file extension may vary depending on your platform).
 
-To build: Make sure you have aubio-0.3.2 or newer installed, and the
-Vamp plugin SDK.  These are available at the URLs given at the top.
-Edit the Makefile appropriately, and type "make".  If the build
-succeeds, copy the vamp-aubio library file into your personal or
-system Vamp plugin location.
+To build: Make sure you have the Vamp plugin SDK and aubio
+installed. (A version of aubio dating from at least July 2012 is
+required.) These are available at the URLs given at the top.  Edit the
+Makefile appropriately, and type "make".  If the build succeeds, copy
+the vamp-aubio library file into your personal or system Vamp plugin
+location.
 
 These plugins are Copyright 2007-2012 Chris Cannam, distributed under the
 GNU General Public License.  (Of course, the real work is done by the
