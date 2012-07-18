@@ -239,17 +239,6 @@ Onset::getOutputDescriptors() const
     d.sampleRate = 0;
     list.push_back(d);
 
-    d = OutputDescriptor();
-    d.identifier = "detectionfunction";
-    d.name = "Onset Detection Function";
-    d.unit = "";
-    d.hasFixedBinCount = true;
-    d.binCount = 1;
-    d.hasKnownExtents = false;
-    d.isQuantized = false;
-    d.sampleType = OutputDescriptor::OneSamplePerStep;
-    list.push_back(d);
-
     return list;
 }
 
@@ -277,13 +266,7 @@ Onset::process(const float *const *inputBuffers,
             m_lastOnset = timestamp;
         }
     }
-/*!!! todo!
-    Feature feature;
-    for (size_t j = 0; j < m_channelCount; ++j) {
-        feature.values.push_back(m_onset->data[j][0]);
-    }
-    returnFeatures[1].push_back(feature);
-*/
+
     return returnFeatures;
 }
 

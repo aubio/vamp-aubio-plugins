@@ -18,7 +18,7 @@ Edit the Makefile appropriately, and type "make".  If the build
 succeeds, copy the vamp-aubio library file into your personal or
 system Vamp plugin location.
 
-These plugins are Copyright 2007 Chris Cannam, distributed under the
+These plugins are Copyright 2007-2012 Chris Cannam, distributed under the
 GNU General Public License.  (Of course, the real work is done by the
 aubio library.)
 
