@@ -3,15 +3,19 @@
 #
 PLUGINDIR	= plugins
 
+# Location of aubio code
+#
+AUBIODIR	= aubio
+
 # Compile flags
 #
-#CXXFLAGS	:= -I../ -I../inst/include $(CXXFLAGS) -fPIC -DNDEBUG -O2 -Wall -I.
-CXXFLAGS	:= -I../ -I../inst/include $(CXXFLAGS) -fPIC -DDEBUG -g -Wall -I.
+CFLAGS		:= -I. -Iaubio/src $(CFLAGS) -fPIC -DDEBUG -g -Wall -I.
+CXXFLAGS	:= $(CFLAGS)
 
 # Libraries required for the plugins.
 #
 #PLUGIN_LIBS	= -L../inst/lib -lvamp-sdk -laubio 
-PLUGIN_LIBS	= ../vamp-plugin-sdk/libvamp-sdk.a /usr/local/lib/libaubio.a /usr/lib/libfftw3f.a
+PLUGIN_LIBS	= -Wl,-Bstatic -lvamp-sdk -lfftw3f -Wl,-Bdynamic
 
 # Flags required to tell the compiler to make a dynamically loadable object
 #
@@ -29,13 +33,14 @@ PLUGIN_EXT	= .so
 ### End of user-serviceable parts
 
 PLUGIN_OBJECTS	= libmain.o $(patsubst %.cpp,%.o,$(wildcard $(PLUGINDIR)/*.cpp))
+AUBIO_OBJECTS	= $(patsubst %.c,%.o,$(wildcard $(AUBIODIR)/src/*.c $(AUBIODIR)/src/*/*.c ))
 PLUGIN_HEADERS	= $(patsubst %.cpp,%.h,$(wildcard $(PLUGINDIR)/*.cpp))
 PLUGIN_TARGET	= vamp-aubio$(PLUGIN_EXT)
 
 all:		$(PLUGIN_TARGET)
 
-$(PLUGIN_TARGET):	$(PLUGIN_OBJECTS) $(PLUGIN_HEADERS)
-		$(CXX) $(LDFLAGS) $(PLUGIN_LDFLAGS) -o $@ $(PLUGIN_OBJECTS) $(PLUGIN_LIBS)
+$(PLUGIN_TARGET):	$(PLUGIN_OBJECTS) $(AUBIO_OBJECTS) $(PLUGIN_HEADERS)
+		$(CXX) $(LDFLAGS) $(PLUGIN_LDFLAGS) -o $@ $(PLUGIN_OBJECTS) $(AUBIO_OBJECTS) $(PLUGIN_LIBS)
 
 clean:		
 		rm -f $(PLUGIN_OBJECTS)
