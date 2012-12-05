@@ -400,6 +400,7 @@ plugbase:aubiotempo a   vamp:Plugin ;
     vamp:parameter   plugbase:aubiotempo_param_silencethreshold ;
 
     vamp:output      plugbase:aubiotempo_output_beats ;
+    vamp:output      plugbase:aubiotempo_output_tempo ;
     .
 plugbase:aubiotempo_param_onsettype a  vamp:QuantizedParameter ;
     vamp:identifier     "onsettype" ;
@@ -444,4 +445,15 @@ plugbase:aubiotempo_output_beats a  vamp:SparseOutput ;
 #   vamp:computes_feature      <Place feature attribute URI here and uncomment> ;
 #   vamp:computes_signal_type  <Place signal type URI here and uncomment> ;
     .
-
+plugbase:aubiotempo_output_tempo a  vamp:DenseOutput ;
+    vamp:identifier       "tempo" ;
+    dc:title              "Tempo" ;
+    dc:description        """"""  ;
+    vamp:fixed_bin_count  "true" ;
+    vamp:unit             "bpm" ;
+    vamp:bin_count        1 ;
+#   vamp:computes_event_type   <Place event type URI here and uncomment> ;
+#   vamp:computes_feature      <Place feature attribute URI here and uncomment> 
+;
+#   vamp:computes_signal_type  <Place signal type URI here and uncomment> ;
+    .

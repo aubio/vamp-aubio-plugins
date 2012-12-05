@@ -14,8 +14,7 @@ CXXFLAGS	:= $(CFLAGS)
 
 # Libraries required for the plugins.
 #
-#PLUGIN_LIBS	= -L../inst/lib -lvamp-sdk -laubio 
-PLUGIN_LIBS	= -Wl,-Bstatic -lvamp-sdk -lfftw3f -Wl,-Bdynamic
+PLUGIN_LIBS	= -Wl,-Bstatic -lvamp-sdk -Wl,-Bdynamic
 
 # Flags required to tell the compiler to make a dynamically loadable object
 #
