@@ -1,7 +1,4 @@
 
-#define HAVE_FFTW3 1
-#define HAVE_FFTW3F 1
-
 #define HAVE_C99_VARARGS_MACROS 1
 
 #define HAVE_LIBM 1
