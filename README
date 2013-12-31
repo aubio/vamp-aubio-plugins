@@ -2,8 +2,8 @@
 vamp-aubio-plugins
 ==================
 
-A set of Vamp plugins (http://www.sonicvisualiser.org/vamp.html) for
-audio feature extraction using Paul Brossier's aubio (http://aubio.piem.org/).
+A set of Vamp plugins (http://www.sonicvisualiser.org/vamp.html) for audio
+feature extraction using the aubio library (http://aubio.org/).
 
 This set includes five plugins: Onset for onset detection, Pitch for
 pitch tracking, Notes for combined onset and pitch, Tempo to estimate
