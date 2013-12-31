@@ -1,0 +1,8 @@
+*.pyc
+*.~[0-9]~
+*.swp
+
+# built files
+vamp-aubio.so
+libmain.so
+*.o
