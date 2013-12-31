@@ -3,10 +3,6 @@
 #
 PLUGINDIR	= plugins
 
-# Location of aubio code
-#
-AUBIODIR	= aubio
-
 # Compile flags
 #
 CFLAGS		:= -fPIC -DDEBUG -O2 -Wall $(CFLAGS)
@@ -33,17 +29,16 @@ PLUGIN_EXT	= .so
 ### End of user-serviceable parts
 
 PLUGIN_OBJECTS	= libmain.o $(patsubst %.cpp,%.o,$(wildcard $(PLUGINDIR)/*.cpp))
-AUBIO_OBJECTS	= $(patsubst %.c,%.o,$(wildcard $(AUBIODIR)/src/*.c $(AUBIODIR)/src/*/*.c ))
 PLUGIN_HEADERS	= $(patsubst %.cpp,%.h,$(wildcard $(PLUGINDIR)/*.cpp))
 PLUGIN_TARGET	= vamp-aubio$(PLUGIN_EXT)
 
 all:		$(PLUGIN_TARGET)
 
-$(PLUGIN_TARGET):	$(PLUGIN_OBJECTS) $(AUBIO_OBJECTS) $(PLUGIN_HEADERS)
-		$(CXX) $(LDFLAGS) $(PLUGIN_LDFLAGS) -o $@ $(PLUGIN_OBJECTS) $(AUBIO_OBJECTS) $(PLUGIN_LIBS)
+$(PLUGIN_TARGET):	$(PLUGIN_OBJECTS) $(PLUGIN_HEADERS)
+		$(CXX) $(LDFLAGS) $(PLUGIN_LDFLAGS) -o $@ $(PLUGIN_OBJECTS) $(PLUGIN_LIBS)
 
 clean:		
-		rm -f $(PLUGIN_OBJECTS) $(AUBIO_OBJECTS)
+		rm -f $(PLUGIN_OBJECTS)
 
 distclean:	clean
 		rm -f $(PLUGIN_TARGET) *~ */*~
