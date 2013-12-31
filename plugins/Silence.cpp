@@ -196,7 +196,7 @@ Silence::process(const float *const *inputBuffers,
                  Vamp::RealTime timestamp)
 {
     for (size_t i = 0; i < m_stepSize; ++i) {
-        fvec_write_sample(m_ibuf, inputBuffers[0][i], i);
+        fvec_set_sample(m_ibuf, inputBuffers[0][i], i);
     }
 
     bool silent = aubio_silence_detection(m_ibuf, m_threshold);

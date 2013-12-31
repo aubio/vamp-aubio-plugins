@@ -269,7 +269,7 @@ Pitch::process(const float *const *inputBuffers,
     }
 
     for (size_t i = 0; i < m_stepSize; ++i) {
-        fvec_write_sample(m_ibuf, inputBuffers[0][i], i);
+        fvec_set_sample(m_ibuf, inputBuffers[0][i], i);
     }
 
     aubio_pitch_do(m_pitchdet, m_ibuf, m_obuf);

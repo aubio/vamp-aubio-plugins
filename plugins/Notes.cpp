@@ -361,7 +361,7 @@ Notes::FeatureSet
 Notes::process(const float *const *inputBuffers, Vamp::RealTime timestamp)
 {
     for (size_t i = 0; i < m_stepSize; ++i) {
-        fvec_write_sample(m_ibuf, inputBuffers[0][i], i);
+        fvec_set_sample(m_ibuf, inputBuffers[0][i], i);
     }
 
     aubio_onset_do(m_onsetdet, m_ibuf, m_onset);
