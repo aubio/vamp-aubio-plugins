@@ -22,20 +22,14 @@ using std::vector;
 using std::cerr;
 using std::endl;
 
-static float
-getFrequencyForMIDIPitch(int midiPitch)
-{
-    return 440.f * powf(2.0, (float(midiPitch) - 69.0) / 12.0);
-}
-
 Pitch::Pitch(float inputSampleRate) :
     Plugin(inputSampleRate),
     m_ibuf(0),
     m_obuf(0),
     m_pitchdet(0),
     m_pitchtype(PitchYinFFT),
-    m_minfreq(getFrequencyForMIDIPitch(32)),
-    m_maxfreq(getFrequencyForMIDIPitch(95)),
+    m_minfreq(aubio_miditofreq(32)),
+    m_maxfreq(aubio_miditofreq(95)),
     m_silence(-90),
     m_wrapRange(false),
     m_stepSize(0),
@@ -156,7 +150,7 @@ Pitch::getParameterDescriptors() const
     desc.name = "Minimum Fundamental Frequency";
     desc.minValue = 1;
     desc.maxValue = m_inputSampleRate/2;
-    desc.defaultValue = getFrequencyForMIDIPitch(32);
+    desc.defaultValue = aubio_miditofreq(32);
     desc.unit = "Hz";
     desc.isQuantized = false;
     list.push_back(desc);
@@ -166,7 +160,7 @@ Pitch::getParameterDescriptors() const
     desc.name = "Maximum Fundamental Frequency";
     desc.minValue = 1;
     desc.maxValue = m_inputSampleRate/2;
-    desc.defaultValue = getFrequencyForMIDIPitch(95);
+    desc.defaultValue = aubio_miditofreq(95);
     desc.unit = "Hz";
     desc.isQuantized = false;
     list.push_back(desc);
