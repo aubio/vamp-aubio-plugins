@@ -9,8 +9,9 @@ AUBIODIR	= aubio
 
 # Compile flags
 #
-CFLAGS		:= -I. -Iaubio/src $(CFLAGS) -fPIC -DDEBUG -O2 -Wall -I.
+CFLAGS		:= -fPIC -DDEBUG -O2 -Wall $(CFLAGS)
 CXXFLAGS	:= $(CFLAGS)
+LDFLAGS	:= -laubio $(LDFLAGS)
 
 # Libraries required for the plugins.
 #
