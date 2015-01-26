@@ -136,6 +136,7 @@ Tempo::getParameterDescriptors() const
     ParameterDescriptor desc;
     desc.identifier = "onsettype";
     desc.name = "Onset Detection Function Type";
+    desc.description = "Type of onset detection function to use";
     desc.minValue = 0;
     desc.maxValue = 7;
     desc.defaultValue = (int)OnsetComplex;
@@ -154,6 +155,7 @@ Tempo::getParameterDescriptors() const
     desc = ParameterDescriptor();
     desc.identifier = "peakpickthreshold";
     desc.name = "Peak Picker Threshold";
+    desc.description = "Peak picking threshold, the higher the least detection";
     desc.minValue = 0;
     desc.maxValue = 1;
     desc.defaultValue = 0.3;
@@ -163,6 +165,7 @@ Tempo::getParameterDescriptors() const
     desc = ParameterDescriptor();
     desc.identifier = "silencethreshold";
     desc.name = "Silence Threshold";
+    desc.description = "Silence threshold, the higher the least detection";
     desc.minValue = -120;
     desc.maxValue = 0;
     desc.defaultValue = -70;
@@ -216,6 +219,7 @@ Tempo::getOutputDescriptors() const
     OutputDescriptor d;
     d.identifier = "beats";
     d.name = "Beats";
+    d.description = "List of times at which a beat was detected";
     d.unit = "";
     d.hasFixedBinCount = true;
     d.binCount = 0;
@@ -225,6 +229,7 @@ Tempo::getOutputDescriptors() const
 
     d.identifier = "tempo";
     d.name = "Tempo";
+    d.desc = "Overall estimated tempo";
     d.unit = "bpm";
     d.hasFixedBinCount = true;
     d.binCount = 1;
