@@ -162,6 +162,7 @@ Notes::getParameterDescriptors() const
     ParameterDescriptor desc;
     desc.identifier = "onsettype";
     desc.name = "Onset Detection Function Type";
+    desc.description = "Type of onset detection function to use";
     desc.minValue = 0;
     desc.maxValue = 7;
     desc.defaultValue = (int)OnsetComplex;
@@ -180,6 +181,7 @@ Notes::getParameterDescriptors() const
     desc = ParameterDescriptor();
     desc.identifier = "pitchtype";
     desc.name = "Pitch Detection Function Type";
+    desc.description = "Type of pitch detection function to use";
     desc.minValue = 0;
     desc.maxValue = 4;
     desc.defaultValue = (int)PitchYinFFT;
@@ -195,6 +197,7 @@ Notes::getParameterDescriptors() const
     desc = ParameterDescriptor();
     desc.identifier = "minpitch";
     desc.name = "Minimum Pitch";
+    desc.description = "Lower pitch value to look for";
     desc.minValue = 0;
     desc.maxValue = 127;
     desc.defaultValue = 32;
@@ -206,6 +209,7 @@ Notes::getParameterDescriptors() const
     desc = ParameterDescriptor();
     desc.identifier = "maxpitch";
     desc.name = "Maximum Pitch";
+    desc.description = "Highest pitch value to look for";
     desc.minValue = 0;
     desc.maxValue = 127;
     desc.defaultValue = 95;
@@ -217,6 +221,7 @@ Notes::getParameterDescriptors() const
     desc = ParameterDescriptor();
     desc.identifier = "wraprange";
     desc.name = "Fold Higher or Lower Notes into Range";
+    desc.description = "Notes detected outside the range will be transposed to higher or lower octaves";
     desc.minValue = 0;
     desc.maxValue = 1;
     desc.defaultValue = 0;
@@ -227,6 +232,7 @@ Notes::getParameterDescriptors() const
     desc = ParameterDescriptor();
     desc.identifier = "avoidleaps";
     desc.name = "Avoid Multi-Octave Jumps";
+    desc.description = "Minimize octave jumps by transposing to the octave of the previously detected note";
     desc.minValue = 0;
     desc.maxValue = 1;
     desc.defaultValue = 0;
@@ -237,6 +243,7 @@ Notes::getParameterDescriptors() const
     desc = ParameterDescriptor();
     desc.identifier = "peakpickthreshold";
     desc.name = "Peak Picker Threshold";
+    desc.description = "Peak picking threshold, the higher the least detection";
     desc.minValue = 0;
     desc.maxValue = 1;
     desc.defaultValue = 0.3;
@@ -246,6 +253,7 @@ Notes::getParameterDescriptors() const
     desc = ParameterDescriptor();
     desc.identifier = "silencethreshold";
     desc.name = "Silence Threshold";
+    desc.description = "Silence threshold, the higher the least detection";
     desc.minValue = -120;
     desc.maxValue = 0;
     desc.defaultValue = -70;
@@ -256,6 +264,7 @@ Notes::getParameterDescriptors() const
     desc = ParameterDescriptor();
     desc.identifier = "minioi";
     desc.name = "Minimum Inter-Onset Interval";
+    desc.description = "Time interval below which two consecutive onsets should be merged";
     desc.minValue = 0;
     desc.maxValue = 40;
     desc.defaultValue = 4;
@@ -340,6 +349,7 @@ Notes::getOutputDescriptors() const
     OutputDescriptor d;
     d.identifier = "notes";
     d.name = "Notes";
+    d.description = "Midi style notes";
     d.unit = "Hz";
     d.hasFixedBinCount = true;
 
