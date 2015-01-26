@@ -137,6 +137,7 @@ Onset::getParameterDescriptors() const
     ParameterDescriptor desc;
     desc.identifier = "onsettype";
     desc.name = "Onset Detection Function Type";
+    desc.description = "Type of onset detection function to use";
     desc.minValue = 0;
     desc.maxValue = 7;
     desc.defaultValue = (int)OnsetComplex;
@@ -155,6 +156,7 @@ Onset::getParameterDescriptors() const
     desc = ParameterDescriptor();
     desc.identifier = "peakpickthreshold";
     desc.name = "Peak Picker Threshold";
+    desc.description = "Threshold used for peak picking, the higher the more detections";
     desc.minValue = 0;
     desc.maxValue = 1;
     desc.defaultValue = 0.3;
@@ -164,6 +166,7 @@ Onset::getParameterDescriptors() const
     desc = ParameterDescriptor();
     desc.identifier = "silencethreshold";
     desc.name = "Silence Threshold";
+    desc.description = "Silence threshold, the higher the least detection";
     desc.minValue = -120;
     desc.maxValue = 0;
     desc.defaultValue = -70;
@@ -174,6 +177,7 @@ Onset::getParameterDescriptors() const
     desc = ParameterDescriptor();
     desc.identifier = "minioi";
     desc.name = "Minimum Inter-Onset Interval";
+    desc.description = "Time interval below which two consecutive onsets should be merged";
     desc.minValue = 0;
     desc.maxValue = 40;
     desc.defaultValue = 4;
@@ -232,6 +236,7 @@ Onset::getOutputDescriptors() const
     OutputDescriptor d;
     d.identifier = "onsets";
     d.name = "Onsets";
+    d.description = "List of times at which a note onset was detected";
     d.unit = "";
     d.hasFixedBinCount = true;
     d.binCount = 0;
