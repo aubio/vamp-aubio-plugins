@@ -349,7 +349,7 @@ Notes::getOutputDescriptors() const
     OutputDescriptor d;
     d.identifier = "notes";
     d.name = "Notes";
-    d.description = "Midi style notes";
+    d.description = "List of notes detected, with their frequency and velocity";
     d.unit = "Hz";
     d.hasFixedBinCount = true;
 
