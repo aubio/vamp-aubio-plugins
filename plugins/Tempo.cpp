@@ -229,7 +229,7 @@ Tempo::getOutputDescriptors() const
 
     d.identifier = "tempo";
     d.name = "Tempo";
-    d.desc = "Overall estimated tempo";
+    d.description = "Overall estimated tempo";
     d.unit = "bpm";
     d.hasFixedBinCount = true;
     d.binCount = 1;
