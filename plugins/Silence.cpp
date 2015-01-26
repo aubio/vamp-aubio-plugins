@@ -117,6 +117,7 @@ Silence::getParameterDescriptors() const
     desc = ParameterDescriptor();
     desc.identifier = "silencethreshold";
     desc.name = "Silence Threshold";
+    desc.description = "Threshold for silence detection";
     desc.minValue = -120;
     desc.maxValue = 0;
     desc.defaultValue = -80;
