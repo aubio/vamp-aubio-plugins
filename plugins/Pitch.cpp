@@ -133,6 +133,7 @@ Pitch::getParameterDescriptors() const
     ParameterDescriptor desc;
     desc.identifier = "pitchtype";
     desc.name = "Pitch Detection Function Type";
+    desc.description = "Type of pitch detection function to use";
     desc.minValue = 0;
     desc.maxValue = 4;
     desc.defaultValue = (int)PitchYinFFT;
@@ -148,6 +149,7 @@ Pitch::getParameterDescriptors() const
     desc = ParameterDescriptor();
     desc.identifier = "minfreq";
     desc.name = "Minimum Fundamental Frequency";
+    desc.description = "Lower frequency to look for";
     desc.minValue = 1;
     desc.maxValue = m_inputSampleRate/2;
     desc.defaultValue = aubio_miditofreq(32);
@@ -158,6 +160,7 @@ Pitch::getParameterDescriptors() const
     desc = ParameterDescriptor();
     desc.identifier = "maxfreq";
     desc.name = "Maximum Fundamental Frequency";
+    desc.description = "Highest frequency to look for";
     desc.minValue = 1;
     desc.maxValue = m_inputSampleRate/2;
     desc.defaultValue = aubio_miditofreq(95);
@@ -168,6 +171,7 @@ Pitch::getParameterDescriptors() const
     desc = ParameterDescriptor();
     desc.identifier = "wraprange";
     desc.name = "Fold Higher or Lower Frequencies into Range";
+    desc.description = "Frequencies detected outside the range will be transposed to higher or lower octaves";
     desc.minValue = 0;
     desc.maxValue = 1;
     desc.defaultValue = 0;
@@ -178,6 +182,7 @@ Pitch::getParameterDescriptors() const
     desc = ParameterDescriptor();
     desc.identifier = "silencethreshold";
     desc.name = "Silence Threshold";
+    desc.description = "Silence threshold, the higher the least detection";
     desc.minValue = -120;
     desc.maxValue = 0;
     desc.defaultValue = -90;
@@ -236,6 +241,7 @@ Pitch::getOutputDescriptors() const
     OutputDescriptor d;
     d.identifier = "frequency";
     d.name = "Fundamental Frequency";
+    d.description = "List of detected frequencies";
     d.unit = "Hz";
     d.hasFixedBinCount = true;
     d.binCount = 1;
