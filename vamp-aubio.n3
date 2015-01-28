@@ -176,6 +176,8 @@ plugbase:aubioonset a   vamp:Plugin ;
     vamp:parameter   plugbase:aubioonset_param_minioi ;
 
     vamp:output      plugbase:aubioonset_output_onsets ;
+    vamp:output      plugbase:aubioonset_output_odf ;
+    vamp:output      plugbase:aubioonset_output_todf ;
     .
 plugbase:aubioonset_param_onsettype a  vamp:QuantizedParameter ;
     vamp:identifier     "onsettype" ;
@@ -230,6 +232,24 @@ plugbase:aubioonset_output_onsets a  vamp:SparseOutput ;
 #   vamp:computes_event_type   <Place event type URI here and uncomment> ;
 #   vamp:computes_feature      <Place feature attribute URI here and uncomment> ;
 #   vamp:computes_signal_type  <Place signal type URI here and uncomment> ;
+    .
+plugbase:aubioonset_output_odf a  vamp:DenseOutput ;
+    vamp:identifier       "onsets" ;
+    dc:title              "Onsets" ;
+    dc:description        """"""  ;
+    vamp:fixed_bin_count  "true" ;
+    vamp:unit             "" ;
+    vamp:bin_count        1 ;
+    vamp:computes_signal_type  af:Signal ;
+    .
+plugbase:aubioonset_output_todf a  vamp:DenseOutput ;
+    vamp:identifier       "onsets" ;
+    dc:title              "Onsets" ;
+    dc:description        """"""  ;
+    vamp:fixed_bin_count  "true" ;
+    vamp:unit             "" ;
+    vamp:bin_count        0 ;
+    vamp:sample_type      vamp:VariableSampleRate ;
     .
 plugbase:aubiopitch a   vamp:Plugin ;
     dc:title              "Aubio Pitch Detector" ;
