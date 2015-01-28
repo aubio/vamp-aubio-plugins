@@ -20,11 +20,18 @@ RANLIB		= $(TOOLPREFIX)ranlib
 CFLAGS		:= -Wall -Wextra -O3 -ftree-vectorize
 
 # Location of Vamp plugin SDK relative to the project directory
-VAMPSDK_DIR	:= ../vamp-plugin-sdk
+VAMPSDK_DIR	?= ../vamp-plugin-sdk
+
+# Location of libvamp-sdk.dll
+VAMPDLL_DIR ?= ../vamp-plugin-sdk-2.5-binaries-win32-mingw
+
+# Location of libaubio-4.dll
+AUBIODLL_DIR ?= ../../dist-win32/usr/local/lib
 
 # Libraries and linker flags required by plugin: add any -l<library>
 # options here
-PLUGIN_LDFLAGS	:= -shared -static -Wl,--retain-symbols-file=vamp-plugin.list $(VAMPSDK_DIR)/libvamp-sdk.a
+PLUGIN_LDFLAGS	:= -shared -Wl,--retain-symbols-file=vamp-plugin.list
+PLUGIN_LIBS			:= $(VAMPDLL_DIR)/libvamp-sdk.dll $(AUBIODLL_DIR)/libaubio-4.dll
 
 
 # File extension for plugin library on this platform
