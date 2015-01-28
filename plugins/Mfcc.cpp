@@ -193,7 +193,7 @@ Mfcc::getOutputDescriptors() const
 
     OutputDescriptor d;
     d.identifier = "mfcc";
-    d.name = "Mfcc";
+    d.name = "Mel-Frequency Cepstrum Coefficients";
     d.description = "List of detected Mel-Frequency Cepstrum Coefficients";
     d.unit = "";
     d.hasFixedBinCount = true;
