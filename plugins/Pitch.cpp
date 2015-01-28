@@ -149,7 +149,7 @@ Pitch::getParameterDescriptors() const
     desc = ParameterDescriptor();
     desc.identifier = "minfreq";
     desc.name = "Minimum Fundamental Frequency";
-    desc.description = "Lower frequency to look for";
+    desc.description = "Lowest frequency to look for";
     desc.minValue = 1;
     desc.maxValue = m_inputSampleRate/2;
     desc.defaultValue = aubio_miditofreq(32);

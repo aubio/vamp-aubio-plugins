@@ -197,7 +197,7 @@ Notes::getParameterDescriptors() const
     desc = ParameterDescriptor();
     desc.identifier = "minpitch";
     desc.name = "Minimum Pitch";
-    desc.description = "Lower pitch value to look for";
+    desc.description = "Lowest pitch value to look for";
     desc.minValue = 0;
     desc.maxValue = 127;
     desc.defaultValue = 32;
