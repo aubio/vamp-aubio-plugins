@@ -244,6 +244,24 @@ Onset::getOutputDescriptors() const
     d.sampleRate = 0;
     list.push_back(d);
 
+    d.identifier = "odf";
+    d.name = "Onset detection function";
+    d.description = "Output of the onset detection function";
+    d.binCount = 1;
+    d.isQuantized = true;
+    d.quantizeStep = 1.0;
+    d.sampleType = OutputDescriptor::OneSamplePerStep;
+    list.push_back(d);
+
+    d.identifier = "todf";
+    d.name = "Thresholded Onset detection function";
+    d.description = "Output of the thresholded onset detection function";
+    d.binCount = 1;
+    d.isQuantized = true;
+    d.quantizeStep = 1.0;
+    d.sampleType = OutputDescriptor::OneSamplePerStep;
+    list.push_back(d);
+
     return list;
 }
 
@@ -271,6 +289,16 @@ Onset::process(const float *const *inputBuffers,
             m_lastOnset = timestamp;
         }
     }
+
+    Feature odf;
+    odf.hasTimestamp = false;
+    odf.values.push_back(aubio_onset_get_descriptor(m_onsetdet));
+    returnFeatures[1].push_back(odf);
+
+    Feature todf;
+    todf.hasTimestamp = false;
+    todf.values.push_back(aubio_onset_get_thresholded_descriptor(m_onsetdet));
+    returnFeatures[2].push_back(todf);
 
     return returnFeatures;
 }
