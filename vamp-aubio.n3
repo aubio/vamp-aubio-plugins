@@ -20,6 +20,7 @@
     vamp:available_plugin plugbase:aubiopitch ; 
     vamp:available_plugin plugbase:aubiosilence ; 
     vamp:available_plugin plugbase:aubiotempo ; 
+    vamp:available_plugin plugbase:aubiomfcc ;
 #   foaf:page <Place more-information HTML page URL here and uncomment> ;
     .
 
@@ -455,4 +456,50 @@ plugbase:aubiotempo_output_tempo a  vamp:DenseOutput ;
 #   vamp:computes_event_type   <Place event type URI here and uncomment> ;
 #   vamp:computes_feature      <Place feature attribute URI here and uncomment> 
 #   vamp:computes_signal_type  <Place signal type URI here and uncomment> ;
+    .
+plugbase:aubiomfcc a   vamp:Plugin ;
+    dc:title              "Aubio Mfcc Extractor" ;
+    vamp:name             "Aubio Mfcc Extractor" ;
+    dc:description        """Detect levels below a certain threshold""" ;
+    foaf:maker            [ foaf:name "Paul Brossier" ] ; # FIXME could give plugin author's URI here
+    dc:rights             """GPL""" ;
+#   cc:license            <Place plugin license URI here and uncomment> ;
+    vamp:identifier       "aubiomfcc" ;
+    vamp:vamp_API_version vamp:api_version_2 ;
+    owl:versionInfo       "4" ;
+    vamp:input_domain     vamp:TimeDomain ;
+
+    vamp:parameter   plugbase:aubiomfcc_param_nfilters ;
+    vamp:parameter   plugbase:aubiomfcc_param_ncoeffs ;
+
+    vamp:output      plugbase:aubiomfcc_output_mfcc ;
+    .
+plugbase:aubiomfcc_param_nfilters a  vamp:Parameter ;
+    vamp:identifier     "nfilters" ;
+    dc:title            "Number of filters" ;
+    dc:format           "" ;
+    vamp:min_value       10 ;
+    vamp:max_value       100 ;
+    vamp:unit           ""  ;
+    vamp:default_value   40 ;
+    vamp:value_names     ();
+    .
+plugbase:aubiomfcc_param_ncoeffs a  vamp:Parameter ;
+    vamp:identifier     "ncoeffs" ;
+    dc:title            "Number of coefficients" ;
+    dc:format           "" ;
+    vamp:min_value       1 ;
+    vamp:max_value       100 ;
+    vamp:unit           ""  ;
+    vamp:default_value   13 ;
+    vamp:value_names     ();
+    .
+plugbase:aubiomfcc_output_silencelevel a  vamp:DenseOutput ;
+    vamp:identifier       "mfcc" ;
+    dc:title              "Mel-Frequency Cepstrum Coefficients" ;
+    dc:description        """"""  ;
+    vamp:fixed_bin_count  "true" ;
+    vamp:unit             "" ;
+    a                     vamp:QuantizedOutput ;
+    vamp:bin_count        1 ;
     .
