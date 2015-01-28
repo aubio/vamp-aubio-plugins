@@ -4,5 +4,6 @@
 
 # built files
 vamp-aubio.so
+vamp-aubio.dylib
 libmain.so
 *.o
