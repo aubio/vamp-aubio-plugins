@@ -22,12 +22,14 @@
 #include "plugins/Notes.h"
 #include "plugins/Tempo.h"
 #include "plugins/Silence.h"
+#include "plugins/Mfcc.h"
 
 static Vamp::PluginAdapter<Onset> onsetAdapter;
 static Vamp::PluginAdapter<Pitch> pitchAdapter;
 static Vamp::PluginAdapter<Notes> notesAdapter;
 static Vamp::PluginAdapter<Tempo> tempoAdapter;
 static Vamp::PluginAdapter<Silence> silenceAdapter;
+static Vamp::PluginAdapter<Mfcc> mfccAdapter;
 
 const VampPluginDescriptor *vampGetPluginDescriptor(unsigned int vampApiVersion,
                                                     unsigned int index)
@@ -40,6 +42,7 @@ const VampPluginDescriptor *vampGetPluginDescriptor(unsigned int vampApiVersion,
     case  2: return notesAdapter.getDescriptor();
     case  3: return tempoAdapter.getDescriptor();
     case  4: return silenceAdapter.getDescriptor();
+    case  5: return mfccAdapter.getDescriptor();
     default: return 0;
     }
 }
