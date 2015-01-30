@@ -23,6 +23,7 @@
 #include "plugins/Tempo.h"
 #include "plugins/Silence.h"
 #include "plugins/Mfcc.h"
+#include "plugins/MelEnergy.h"
 
 static Vamp::PluginAdapter<Onset> onsetAdapter;
 static Vamp::PluginAdapter<Pitch> pitchAdapter;
@@ -30,6 +31,7 @@ static Vamp::PluginAdapter<Notes> notesAdapter;
 static Vamp::PluginAdapter<Tempo> tempoAdapter;
 static Vamp::PluginAdapter<Silence> silenceAdapter;
 static Vamp::PluginAdapter<Mfcc> mfccAdapter;
+static Vamp::PluginAdapter<MelEnergy> melenergyAdapter;
 
 const VampPluginDescriptor *vampGetPluginDescriptor(unsigned int vampApiVersion,
                                                     unsigned int index)
@@ -43,6 +45,7 @@ const VampPluginDescriptor *vampGetPluginDescriptor(unsigned int vampApiVersion,
     case  3: return tempoAdapter.getDescriptor();
     case  4: return silenceAdapter.getDescriptor();
     case  5: return mfccAdapter.getDescriptor();
+    case  6: return melenergyAdapter.getDescriptor();
     default: return 0;
     }
 }
