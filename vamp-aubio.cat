@@ -5,3 +5,4 @@ vamp:vamp-aubio:aubiopitch::Pitch
 vamp:vamp-aubio:aubiosilence::Low Level Features
 vamp:vamp-aubio:aubiomfcc::Low Level Features
 vamp:vamp-aubio:aubiomelenergy::Low Level Features
+vamp:vamp-aubio:aubiospecdesc::Low Level Features
