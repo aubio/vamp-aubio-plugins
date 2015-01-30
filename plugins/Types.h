@@ -36,6 +36,19 @@ enum OnsetType {
 
 extern const char *getAubioNameForOnsetType(OnsetType t);
 
+enum SpecDescType {
+    SpecDescFlux,
+    SpecDescCentroid,
+    SpecDescSpread,
+    SpecDescSkeweness,
+    SpecDescKurtosis,
+    SpecDescSlope,
+    SpecDescDecrease,
+    SpecDescRolloff
+};
+
+extern const char *getAubioNameForSpecDescType(SpecDescType t);
+
 enum PitchType {
     PitchYin,
     PitchMComb,

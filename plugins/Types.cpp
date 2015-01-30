@@ -25,6 +25,15 @@ const char *getAubioNameForOnsetType(OnsetType t)
     return names[(int)t];
 }
 
+const char *getAubioNameForSpecDescType(SpecDescType t)
+{
+    // In the same order as the enum elements in the header
+    static const char *const names[] = {
+        "specflux", "centroid", "spread", "skewness", "kurtosis", "slope", "decrease", "rolloff"
+    };
+    return names[(int)t];
+}
+
 const char *getAubioNameForPitchType(PitchType t)
 {
     // In the same order as the enum elements in the header
