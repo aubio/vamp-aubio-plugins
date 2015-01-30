@@ -24,6 +24,7 @@
 #include "plugins/Silence.h"
 #include "plugins/Mfcc.h"
 #include "plugins/MelEnergy.h"
+#include "plugins/SpecDesc.h"
 
 static Vamp::PluginAdapter<Onset> onsetAdapter;
 static Vamp::PluginAdapter<Pitch> pitchAdapter;
@@ -32,6 +33,7 @@ static Vamp::PluginAdapter<Tempo> tempoAdapter;
 static Vamp::PluginAdapter<Silence> silenceAdapter;
 static Vamp::PluginAdapter<Mfcc> mfccAdapter;
 static Vamp::PluginAdapter<MelEnergy> melenergyAdapter;
+static Vamp::PluginAdapter<SpecDesc> specdescAdapter;
 
 const VampPluginDescriptor *vampGetPluginDescriptor(unsigned int vampApiVersion,
                                                     unsigned int index)
@@ -46,6 +48,7 @@ const VampPluginDescriptor *vampGetPluginDescriptor(unsigned int vampApiVersion,
     case  4: return silenceAdapter.getDescriptor();
     case  5: return mfccAdapter.getDescriptor();
     case  6: return melenergyAdapter.getDescriptor();
+    case  7: return specdescAdapter.getDescriptor();
     default: return 0;
     }
 }
