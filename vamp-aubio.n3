@@ -21,6 +21,8 @@
     vamp:available_plugin plugbase:aubiosilence ; 
     vamp:available_plugin plugbase:aubiotempo ; 
     vamp:available_plugin plugbase:aubiomfcc ;
+    vamp:available_plugin plugbase:aubiomelenergy ;
+    vamp:available_plugin plugbase:aubiospecdesc ;
 #   foaf:page <Place more-information HTML page URL here and uncomment> ;
     .
 
@@ -560,7 +562,6 @@ plugbase:aubiomelenergy a   vamp:Plugin ;
     vamp:input_domain     vamp:TimeDomain ;
 
     vamp:parameter   plugbase:aubiomelenergy_param_nfilters ;
-    vamp:parameter   plugbase:aubiomelenergy_param_ncoeffs ;
 
     vamp:output      plugbase:aubiomelenergy_output_melenergy ;
     .
@@ -569,13 +570,13 @@ plugbase:aubiomelenergy_param_nfilters a  vamp:Parameter ;
     dc:title            "Number of filters" ;
     dc:description      """Size of filterbank used to compute mel-frequency bands""" ;
     dc:format           "" ;
-    vamp:min_value       10 ;
-    vamp:max_value       100 ;
+    vamp:min_value       40 ;
+    vamp:max_value       40 ;
     vamp:unit           ""  ;
     vamp:default_value   40 ;
     vamp:value_names     ();
     .
-plugbase:aubiomelenergy_output_silencelevel a  vamp:DenseOutput ;
+plugbase:aubiomelenergy_output_melenergy a  vamp:DenseOutput ;
     vamp:identifier       "melenergy" ;
     dc:title              "Mel-Frequency Cepstrum Coefficients" ;
     dc:description        """List of measured energy in each Mel-frequency bands""" ;
@@ -584,4 +585,41 @@ plugbase:aubiomelenergy_output_silencelevel a  vamp:DenseOutput ;
     vamp:unit             "" ;
     a                     vamp:QuantizedOutput ;
     vamp:bin_count        1 ;
+    .
+plugbase:aubiospecdesc a   vamp:Plugin ;
+    dc:title              "Aubio Spectral Descriptor" ;
+    vamp:name             "Aubio Spectral Descriptor" ;
+    dc:description        """Compute spectral description function""" ;
+    foaf:maker            [ foaf:name "Paul Brossier" ] ; # FIXME could give plugin author's URI here
+    dc:rights             """GPL""" ;
+#   cc:license            <Place plugin license URI here and uncomment> ;
+    vamp:identifier       "aubiospecdesc" ;
+    vamp:vamp_API_version vamp:api_version_2 ;
+    owl:versionInfo       "4" ;
+    vamp:input_domain     vamp:TimeDomain ;
+
+    vamp:parameter   plugbase:aubiospecdesc_param_specdesctype ;
+
+    vamp:output      plugbase:aubiospecdesc_output_descriptor ;
+    .
+plugbase:aubioonset_param_specdesctype a  vamp:QuantizedParameter ;
+    vamp:identifier     "specdesctype" ;
+    dc:title            "Spectral Description Function" ;
+    dc:description      """Type of onset detection function to use""" ;
+    dc:format           "" ;
+    vamp:min_value       0 ;
+    vamp:max_value       7 ;
+    vamp:unit           "" ;
+    vamp:quantize_step   1  ;
+    vamp:default_value   3 ;
+    vamp:value_names     ( "Spectral Flux" "Spectral Centroid" "Spectral Spread" "Spectral Skewness" "Spectral Kurtosis" "Spectral Slope" "Spectral Decrease" "Spectral Rolloff" );
+    .
+plugbase:aubiospecdesc_output_descriptor a  vamp:DenseOutput ;
+    vamp:identifier       "specdesc" ;
+    dc:title              "Spectral Descriptor Output" ;
+    dc:description        """Values computed on consecutive spectral frames""" ;
+    vamp:fixed_bin_count  "true" ;
+    vamp:unit             "" ;
+    vamp:bin_count        1 ;
+    vamp:computes_signal_type  af:Signal ;
     .
