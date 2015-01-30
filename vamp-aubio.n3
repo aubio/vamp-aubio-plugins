@@ -547,3 +547,41 @@ plugbase:aubiomfcc_output_silencelevel a  vamp:DenseOutput ;
     a                     vamp:QuantizedOutput ;
     vamp:bin_count        1 ;
     .
+plugbase:aubiomelenergy a   vamp:Plugin ;
+    dc:title              "Aubio Mel-Frequency Bands Extractor" ;
+    vamp:name             "Aubio Mel-Energy Bands Extractor" ;
+    dc:description        """Compute energy in each 40 mel-frequency bands""" ;
+    foaf:maker            [ foaf:name "Paul Brossier" ] ; # FIXME could give plugin author's URI here
+    dc:rights             """GPL""" ;
+#   cc:license            <Place plugin license URI here and uncomment> ;
+    vamp:identifier       "aubiomelenergy" ;
+    vamp:vamp_API_version vamp:api_version_2 ;
+    owl:versionInfo       "4" ;
+    vamp:input_domain     vamp:TimeDomain ;
+
+    vamp:parameter   plugbase:aubiomelenergy_param_nfilters ;
+    vamp:parameter   plugbase:aubiomelenergy_param_ncoeffs ;
+
+    vamp:output      plugbase:aubiomelenergy_output_melenergy ;
+    .
+plugbase:aubiomelenergy_param_nfilters a  vamp:Parameter ;
+    vamp:identifier     "nfilters" ;
+    dc:title            "Number of filters" ;
+    dc:description      """Size of filterbank used to compute mel-frequency bands""" ;
+    dc:format           "" ;
+    vamp:min_value       10 ;
+    vamp:max_value       100 ;
+    vamp:unit           ""  ;
+    vamp:default_value   40 ;
+    vamp:value_names     ();
+    .
+plugbase:aubiomelenergy_output_silencelevel a  vamp:DenseOutput ;
+    vamp:identifier       "melenergy" ;
+    dc:title              "Mel-Frequency Cepstrum Coefficients" ;
+    dc:description        """List of measured energy in each Mel-frequency bands""" ;
+    dc:description        """"""  ;
+    vamp:fixed_bin_count  "true" ;
+    vamp:unit             "" ;
+    a                     vamp:QuantizedOutput ;
+    vamp:bin_count        1 ;
+    .
