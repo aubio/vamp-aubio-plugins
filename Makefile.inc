@@ -12,17 +12,17 @@
 #
 #   $ make -f Makefile.mingw
 
+# Defaults, overridden from the platform-specific Makefile
+VAMPSDK_DIR	?= ../vamp-plugin-sdk-2.5
+PLUGIN_EXT	?= .so
+CXX 		?= g++
+CC 		?= gcc
+
 CFLAGS		:= $(ARCHFLAGS) $(CFLAGS)
 CXXFLAGS	:= $(CFLAGS) -I. -I$(VAMPSDK_DIR) $(CXXFLAGS)
 
 LDFLAGS		:= -L$(VAMPSDK_DIR) -laubio $(LDFLAGS)
 PLUGIN_LDFLAGS	:= $(LDFLAGS) $(PLUGIN_LDFLAGS)
-
-# Defaults, overridden from the platform-specific Makefile
-VAMPSDK_DIR	?= ../vamp-plugin-sdk
-PLUGIN_EXT	?= .so
-CXX 		?= g++
-CC 		?= gcc
 
 # Location of our plugins
 #
