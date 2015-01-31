@@ -15,7 +15,7 @@
 CFLAGS		:= $(ARCHFLAGS) $(CFLAGS)
 CXXFLAGS	:= $(CFLAGS) -I. -I$(VAMPSDK_DIR) $(CXXFLAGS)
 
-LDFLAGS		:= $(ARCHFLAGS) -L$(VAMPSDK_DIR) -laubio $(LDFLAGS)
+LDFLAGS		:= -L$(VAMPSDK_DIR) -laubio $(LDFLAGS)
 PLUGIN_LDFLAGS	:= $(LDFLAGS) $(PLUGIN_LDFLAGS)
 
 # Defaults, overridden from the platform-specific Makefile
