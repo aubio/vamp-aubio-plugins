@@ -1,0 +1,38 @@
+#! /bin/sh
+
+# instructions to build vamp-aubio-plugins for linux amd64
+
+# move one directoy up
+pushd ..
+
+# fetch Vamp SDK
+curl -O https://code.soundsoftware.ac.uk/attachments/download/690/vamp-plugin-sdk-2.5.tar.gz
+tar xf vamp-plugin-sdk-2.5.tar.gz
+
+# fetch Vamp linux64 binaries
+curl -O https://code.soundsoftware.ac.uk/attachments/download/703/vamp-plugin-sdk-2.5-binaries-amd64-linux.tar.gz
+tar xf vamp-plugin-sdk-2.5-binaries-amd64-linux.tar.gz
+
+# fetch and build aubio
+
+# from git develop branch
+#git clone git://git.aubio.org/git/aubio/ aubio-linux64
+#pushd aubio-linux64
+##git co develop
+
+# from latest release
+curl -O http://aubio.org/pub/aubio-0.4.1.tar.bz2
+tar xf aubio-0.4.1.tar.bz2
+pushd aubio-0.4.1
+
+./waf distclean configure build install \
+  --destdir=../aubio-dist-linux64 \
+  --disable-avcodec --disable-samplerate --disable-jack --disable-sndfile
+popd
+
+# back to current directory
+popd
+# now build vamp-aubio-plugins
+CXXFLAGS="-I../aubio-dist-linux64/usr/local/include" \
+  LDFLAGS="-L../aubio-dist-linux64/usr/local/lib" \
+  make -f Makefile.linux clean all
