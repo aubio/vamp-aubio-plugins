@@ -16,11 +16,14 @@ CFLAGS		:= -Wall -Wextra -O3 -ftree-vectorize -fPIC
 ARCHFLAGS	?= -mmacosx-version-min=10.6 -arch x86_64
 
 # Location of Vamp plugin SDK relative to the project directory
-VAMPSDK_DIR	:= ../vamp-plugin-sdk
+VAMPSDK_DIR	:= ../vamp-plugin-sdk-2.5
+
+# Location of libvamp-sdk.dylib
+VAMPDLL_DIR ?= ../vamp-plugin-sdk-2.5-binaries-osx
 
 # Libraries and linker flags required by plugin: add any -l<library>
 # options here
-PLUGIN_LDFLAGS	:= -dynamiclib -exported_symbols_list vamp-plugin.list -lvamp-sdk
+PLUGIN_LDFLAGS	:= -dynamiclib -exported_symbols_list=vamp-plugin.list -L$(VAMPDLL_DIR) -lvamp-sdk
 
 # File extension for plugin library on this platform
 PLUGIN_EXT	:= .dylib
