@@ -10,7 +10,7 @@ tar xf vamp-plugin-sdk-2.5.tar.gz
 
 # get Vamp windows binaries
 curl -O https://code.soundsoftware.ac.uk/attachments/download/694/vamp-plugin-sdk-2.5-binaries-win32-mingw.zip
-unzip -x vamp-plugin-sdk-2.5-binaries-win32-mingw.zip
+unzip -ox vamp-plugin-sdk-2.5-binaries-win32-mingw.zip
 
 # build aubio
 git clone git://git.aubio.org/git/aubio/ aubio-mingw32
