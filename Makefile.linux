@@ -13,7 +13,7 @@
 CFLAGS		:= -Wall -Wextra -O3 -msse -msse2 -mfpmath=sse -ftree-vectorize -fPIC
 
 # Location of Vamp plugin SDK relative to the project directory
-VAMPSDK_DIR	:= ../vamp-plugin-sdk
+VAMPSDK_DIR	:= ../vamp-plugin-sdk-2.5
 
 # Libraries and linker flags required by plugin: add any -l<library>
 # options here
