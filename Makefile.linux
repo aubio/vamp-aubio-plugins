@@ -15,10 +15,14 @@ CFLAGS		:= -Wall -Wextra -O3 -msse -msse2 -mfpmath=sse -ftree-vectorize -fPIC
 # Location of Vamp plugin SDK relative to the project directory
 VAMPSDK_DIR	:= ../vamp-plugin-sdk-2.5
 
+# Location of libvamp-sdk.a
+VAMPBIN_DIR_LINUX64 ?= ../vamp-plugin-sdk-2.5-binaries-amd64-linux
+VAMPBIN_DIR_LINUX32 ?= ../vamp-plugin-sdk-2.5-binaries-i686-linux
+
 # Libraries and linker flags required by plugin: add any -l<library>
 # options here
 PLUGIN_LDFLAGS	:= -shared -Wl,-Bsymbolic -Wl,-z,defs -Wl,--version-script=vamp-plugin.map
-PLUGIN_LIBS			:= $(VAMPSDK_DIR)/libvamp-sdk.a
+PLUGIN_LIBS			:= -L$(VAMPBIN_DIR_LINUX32) -L$(VAMPBIN_DIR_LINUX64) -lvamp-sdk
 
 # File extension for plugin library on this platform
 PLUGIN_EXT	:= .so
