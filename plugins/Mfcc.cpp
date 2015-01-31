@@ -142,9 +142,9 @@ Mfcc::getParameterDescriptors() const
     ParameterDescriptor desc;
     desc.identifier = "nfilters";
     desc.name = "Number of filters";
-    desc.description = "Size of filterbank used to compute MFCCs";
-    desc.minValue = 10;
-    desc.maxValue = 100;
+    desc.description = "Size of mel filterbank used to compute MFCCs (fixed to 40 for now)";
+    desc.minValue = 40;
+    desc.maxValue = 40;
     desc.defaultValue = 40;
     desc.isQuantized = true;
     desc.quantizeStep = 1;

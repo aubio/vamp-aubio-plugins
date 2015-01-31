@@ -146,7 +146,7 @@ MelEnergy::getParameterDescriptors() const
     ParameterDescriptor desc;
     desc.identifier = "nfilters";
     desc.name = "Number of filters";
-    desc.description = "Size of filterbank used to Mel Bands (40)";
+    desc.description = "Size of filterbank used to compute mel bands (fixed to 40 for now)";
     desc.minValue = 40;
     desc.maxValue = 40;
     desc.defaultValue = 40;
