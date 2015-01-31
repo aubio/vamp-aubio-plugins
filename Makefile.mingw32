@@ -7,7 +7,7 @@
 ##  instead so that it can be included by all platform Makefiles.
 
 # Location of Vamp plugin SDK relative to the project directory
-VAMPSDK_DIR	?= ../vamp-plugin-sdk
+VAMPSDK_DIR	?= ../vamp-plugin-sdk-2.5
 
 # Location of libvamp-sdk.dll
 VAMPDLL_DIR ?= ../vamp-plugin-sdk-2.5-binaries-win32-mingw
