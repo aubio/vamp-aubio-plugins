@@ -10,9 +10,9 @@
 VAMPSDK_DIR	?= ../vamp-plugin-sdk-2.5
 
 # Location of libvamp-sdk.dll
-VAMPDLL_DIR ?= ../vamp-plugin-sdk-2.5-binaries-win32-mingw
+VAMPBIN_DIR ?= ../vamp-plugin-sdk-2.5-binaries-win32-mingw
 
-# Location of libaubio-4.dll
+# Location of cross compiled and installed aubio tree
 AUBIO_MINGW32_DISTDIR ?= ../aubio-dist-mingw32
 
 # Toolchain prefix
@@ -40,7 +40,7 @@ PLUGIN_LDFLAGS  := -L$(AUBIO_MINGW32_DISTDIR)/usr/local/lib
 # options here
 PLUGIN_LDFLAGS  += -Wl,--enable-auto-import
 PLUGIN_LDFLAGS  += -shared -Wl,--retain-symbols-file=vamp-plugin.list
-PLUGIN_LIBS     := $(VAMPDLL_DIR)/libvamp-sdk.dll
+PLUGIN_LIBS     := $(VAMPBIN_DIR)/libvamp-sdk.dll
 
 # File extension for plugin library on this platform
 PLUGIN_EXT	:= .dll
