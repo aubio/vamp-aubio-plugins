@@ -6,7 +6,7 @@
 ##  Note that the list of source files, etc, goes in Makefile.inc
 ##  instead so that it can be included by all platform Makefiles.
 
-TOOLPREFIX     ?=
+TOOLPREFIX     ?= i586-mingw32msvc-
 CXX		= $(TOOLPREFIX)g++
 CC		= $(TOOLPREFIX)gcc
 LD		= $(TOOLPREFIX)g++
