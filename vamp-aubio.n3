@@ -6,6 +6,7 @@
 @prefix dc:       <http://purl.org/dc/elements/1.1/> .
 @prefix af:       <http://purl.org/ontology/af/> .
 @prefix foaf:     <http://xmlns.com/foaf/0.1/> .
+@prefix doap: 	  <http://usefulinc.com/ns/doap#> .
 @prefix cc:       <http://web.resource.org/cc/> .
 @prefix :         <#> .
 
@@ -13,8 +14,22 @@
     foaf:maker          <http://www.vamp-plugins.org/doap.rdf#template-generator> ;
     foaf:primaryTopic   <http://vamp-plugins.org/rdf/plugins/vamp-aubio> .
 
+:maker
+    foaf:name "Paul Brossier" ;
+    foaf:logo <http://aubio.org/smallrect.png> ;
+    foaf:page <http://aubio.org> .
+
 :vamp-aubio a  vamp:PluginLibrary ;
     vamp:identifier "vamp-aubio"  ; 
+    dc:title "Vamp Aubio plugins" ;
+    dc:description "The Vamp Aubio Plugins provide methods from Paul Brossier's aubio annotation library, including beat and tempo tracking, onset detection, pitch detection, note tracking, silence detector, and Mel-frequency cepstral coefficients." ;
+    foaf:maker :maker ;
+    foaf:page <http://aubio.org/vamp-aubio-plugins/> ;
+    doap:download-page <http://aubio.org/vamp-aubio-plugins/download> ;
+    vamp:has_source true ;
+    vamp:has_binary "win32" ;
+    vamp:has_binary "osx" ;
+    vamp:has_binary "linux64" ;
     vamp:available_plugin plugbase:aubionotes ; 
     vamp:available_plugin plugbase:aubioonset ; 
     vamp:available_plugin plugbase:aubiopitch ; 
@@ -23,14 +38,14 @@
     vamp:available_plugin plugbase:aubiomfcc ;
     vamp:available_plugin plugbase:aubiomelenergy ;
     vamp:available_plugin plugbase:aubiospecdesc ;
-#   foaf:page <Place more-information HTML page URL here and uncomment> ;
     .
 
 plugbase:aubionotes a   vamp:Plugin ;
     dc:title              "Aubio Note Tracker" ;
     vamp:name             "Aubio Note Tracker" ;
+    vamp:category	  "Notes" ;
     dc:description        """Estimate note onset positions, pitches and durations""" ;
-    foaf:maker            [ foaf:name "Paul Brossier (plugin by Chris Cannam)" ] ; # FIXME could give plugin author's URI here
+    foaf:maker            :maker ;
     dc:rights             """GPL""" ;
 #   cc:license            <Place plugin license URI here and uncomment> ; 
     vamp:identifier       "aubionotes" ;
@@ -172,8 +187,9 @@ plugbase:aubionotes_output_notes a  vamp:SparseOutput ;
 plugbase:aubioonset a   vamp:Plugin ;
     dc:title              "Aubio Onset Detector" ;
     vamp:name             "Aubio Onset Detector" ;
+    vamp:category	  "Time > Onsets" ;
     dc:description        """Estimate note onset times""" ;
-    foaf:maker            [ foaf:name "Paul Brossier (plugin by Chris Cannam)" ] ; # FIXME could give plugin author's URI here
+    foaf:maker :maker ;
     dc:rights             """GPL""" ;
 #   cc:license            <Place plugin license URI here and uncomment> ; 
     vamp:identifier       "aubioonset" ;
@@ -269,8 +285,9 @@ plugbase:aubioonset_output_todf a  vamp:DenseOutput ;
 plugbase:aubiopitch a   vamp:Plugin ;
     dc:title              "Aubio Pitch Detector" ;
     vamp:name             "Aubio Pitch Detector" ;
+    vamp:category	  "Pitch" ;
     dc:description        """Track estimated note pitches""" ;
-    foaf:maker            [ foaf:name "Paul Brossier (plugin by Chris Cannam)" ] ; # FIXME could give plugin author's URI here
+    foaf:maker :maker ;
     dc:rights             """GPL""" ;
 #   cc:license            <Place plugin license URI here and uncomment> ; 
     vamp:identifier       "aubiopitch" ;
@@ -358,8 +375,9 @@ plugbase:aubiopitch_output_frequency a  vamp:SparseOutput ;
 plugbase:aubiosilence a   vamp:Plugin ;
     dc:title              "Aubio Silence Detector" ;
     vamp:name             "Aubio Silence Detector" ;
+    vamp:category	  "Low Level Features" ;
     dc:description        """Detect levels below a certain threshold""" ;
-    foaf:maker            [ foaf:name "Paul Brossier (plugin by Chris Cannam)" ] ; # FIXME could give plugin author's URI here
+    foaf:maker :maker ;
     dc:rights             """GPL""" ;
 #   cc:license            <Place plugin license URI here and uncomment> ; 
     vamp:identifier       "aubiosilence" ;
@@ -427,8 +445,9 @@ plugbase:aubiosilence_output_silencelevel a  vamp:SparseOutput ;
 plugbase:aubiotempo a   vamp:Plugin ;
     dc:title              "Aubio Beat Tracker" ;
     vamp:name             "Aubio Beat Tracker" ;
+    vamp:category	  "Time > Tempo" ;
     dc:description        """Estimate the musical tempo and track beat positions""" ;
-    foaf:maker            [ foaf:name "Paul Brossier (method by Matthew Davies, plugin by Chris Cannam)" ] ; # FIXME could give plugin author's URI here
+    foaf:maker :maker ;
     dc:rights             """GPL""" ;
 #   cc:license            <Place plugin license URI here and uncomment> ; 
     vamp:identifier       "aubiotempo" ;
@@ -503,8 +522,9 @@ plugbase:aubiotempo_output_tempo a  vamp:DenseOutput ;
 plugbase:aubiomfcc a   vamp:Plugin ;
     dc:title              "Aubio Mfcc Extractor" ;
     vamp:name             "Aubio Mfcc Extractor" ;
+    vamp:category	  "Low Level Features" ;
     dc:description        """Detect levels below a certain threshold""" ;
-    foaf:maker            [ foaf:name "Paul Brossier" ] ; # FIXME could give plugin author's URI here
+    foaf:maker :maker ;
     dc:rights             """GPL""" ;
 #   cc:license            <Place plugin license URI here and uncomment> ;
     vamp:identifier       "aubiomfcc" ;
@@ -552,8 +572,9 @@ plugbase:aubiomfcc_output_silencelevel a  vamp:DenseOutput ;
 plugbase:aubiomelenergy a   vamp:Plugin ;
     dc:title              "Aubio Mel-Frequency Bands Extractor" ;
     vamp:name             "Aubio Mel-Energy Bands Extractor" ;
+    vamp:category	  "Low Level Features" ;
     dc:description        """Compute energy in each 40 mel-frequency bands""" ;
-    foaf:maker            [ foaf:name "Paul Brossier" ] ; # FIXME could give plugin author's URI here
+    foaf:maker :maker ;
     dc:rights             """GPL""" ;
 #   cc:license            <Place plugin license URI here and uncomment> ;
     vamp:identifier       "aubiomelenergy" ;
@@ -589,8 +610,9 @@ plugbase:aubiomelenergy_output_melenergy a  vamp:DenseOutput ;
 plugbase:aubiospecdesc a   vamp:Plugin ;
     dc:title              "Aubio Spectral Descriptor" ;
     vamp:name             "Aubio Spectral Descriptor" ;
+    vamp:category	  "Low Level Features" ;
     dc:description        """Compute spectral description function""" ;
-    foaf:maker            [ foaf:name "Paul Brossier" ] ; # FIXME could give plugin author's URI here
+    foaf:maker :maker ;
     dc:rights             """GPL""" ;
 #   cc:license            <Place plugin license URI here and uncomment> ;
     vamp:identifier       "aubiospecdesc" ;
