@@ -189,7 +189,7 @@ MelEnergy::getOutputDescriptors() const
     d.binCount = m_nfilters;
     d.isQuantized = true;
     d.sampleType = OutputDescriptor::FixedSampleRate;
-    d.sampleRate = m_inputSampleRate / m_stepSize;
+    d.sampleRate = OutputDescriptor::OneSamplePerStep;
     list.push_back(d);
 
     return list;
@@ -218,8 +218,6 @@ MelEnergy::process(const float *const *inputBuffers,
     aubio_filterbank_do(m_melbank, m_ispec, m_ovec);
 
     Feature feature;
-    //feature.hasTimestamp = false;
-    feature.timestamp = timestamp;
     for (uint_t i = 0; i < m_ovec->length; i++) {
         float value = m_ovec->data[i];
         feature.values.push_back(value);
