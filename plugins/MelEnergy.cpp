@@ -197,7 +197,7 @@ MelEnergy::getOutputDescriptors() const
 
 MelEnergy::FeatureSet
 MelEnergy::process(const float *const *inputBuffers,
-               Vamp::RealTime timestamp)
+               __attribute__((unused)) Vamp::RealTime timestamp)
 {
     FeatureSet returnFeatures;
 

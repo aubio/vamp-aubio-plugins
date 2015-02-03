@@ -208,7 +208,7 @@ Mfcc::getOutputDescriptors() const
 
 Mfcc::FeatureSet
 Mfcc::process(const float *const *inputBuffers,
-               Vamp::RealTime timestamp)
+               __attribute__((unused)) Vamp::RealTime timestamp)
 {
     FeatureSet returnFeatures;
 
