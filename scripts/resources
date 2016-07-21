@@ -1,0 +1,20 @@
+#! /bin/bash
+
+# latest sdk source
+VAMP_PLUGIN_SDK=https://code.soundsoftware.ac.uk/attachments/download/1520/vamp-plugin-sdk-2.6.tar.gz
+VAMP_PLUGIN_SDK_ZIP=https://code.soundsoftware.ac.uk/attachments/download/1521/vamp-plugin-sdk-2.6.zip
+
+# latest binaries
+VAMP_PLUGIN_SDK_MSVC=https://code.soundsoftware.ac.uk/attachments/download/1513/vamp-plugin-sdk-2.6-staticlibs-win32-msvc.zip
+VAMP_PLUGIN_SDK_OSX=https://code.soundsoftware.ac.uk/attachments/download/1512/vamp-plugin-sdk-2.6-binaries-osx.tar.gz
+VAMP_PLUGIN_SDK_LINUX32=https://code.soundsoftware.ac.uk/attachments/download/1516/vamp-plugin-sdk-2.6-binaries-i686-linux.tar.gz
+VAMP_PLUGIN_SDK_LINUX64=https://code.soundsoftware.ac.uk/attachments/download/1517/vamp-plugin-sdk-2.6-binaries-amd64-linux.tar.gz
+VAMP_PLUGIN_SDK_MINGW=https://code.soundsoftware.ac.uk/attachments/download/1518/vamp-plugin-sdk-2.6-binaries-win32-mingw.zip
+
+# helpers
+
+function fetch {
+  target=`basename $1`
+  [ -f $target ] && echo found $target || ( wget $1 || curl -O $1 > $target )
+  tar xvf $target || unzip -x $target
+}
