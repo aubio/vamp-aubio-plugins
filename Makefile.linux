@@ -11,13 +11,15 @@
 
 # ... or for a release build
 CFLAGS		:= -Wall -Wextra -O3 -msse -msse2 -mfpmath=sse -ftree-vectorize -fPIC
+CFLAGS += -I./contrib/aubio-dist/include
+LDFLAGS += -L./contrib/aubio-dist/lib
 
 # Location of Vamp plugin SDK relative to the project directory
-VAMPSDK_DIR	:= ../vamp-plugin-sdk-2.5
+VAMPSDK_DIR	:= ./contrib/vamp-plugin-sdk-2.6
 
 # Location of libvamp-sdk.a
-VAMPBIN_DIR_LINUX64 ?= ../vamp-plugin-sdk-2.5-binaries-amd64-linux
-VAMPBIN_DIR_LINUX32 ?= ../vamp-plugin-sdk-2.5-binaries-i686-linux
+VAMPBIN_DIR_LINUX64 ?= ./contrib/vamp-plugin-sdk-2.6-binaries-amd64-linux
+VAMPBIN_DIR_LINUX32 ?= ./contrib/vamp-plugin-sdk-2.6-binaries-i686-linux
 
 # Libraries and linker flags required by plugin: add any -l<library>
 # options here
