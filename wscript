@@ -2,7 +2,7 @@
 
 # script to build vamp-aubio-plugin with waf (https://waf.io)
 
-import sys, os
+import sys, os, platform
 
 local_aubio_include  = 'contrib/aubio-dist/include'
 local_aubio_lib      = 'contrib/aubio-dist/lib'
@@ -27,16 +27,17 @@ def configure(conf):
 
     if os.path.isdir(local_vamp_include):
         conf.env.append_value('CXXFLAGS', '-I../'+local_vamp_include)
-        conf.env.append_value('SHLIB_MARKER', '-lvamp-sdk')
         if sys.platform.startswith('linux'):
-            if os.path.isdir(local_vamp_lib_amd64):
-                conf.env.append_value('LINKFLAGS', '-L../'+local_vamp_lib_amd64)
-            if os.path.isdir(local_vamp_lib_i686):
-                conf.env.append_value('LINKFLAGS', '-L../'+local_vamp_lib_i686)
+            if platform.machine() == 'x86_64':
+                local_vamp_lib = local_vamp_lib_amd64
+            elif platform.machine() == 'x86_64':
+                local_vamp_lib = local_vamp_lib_i686
         elif sys.platform == 'darwin':
-            if os.path.isdir(local_vamp_lib_osx):
-                conf.env.append_value('LINKFLAGS', '-L../'+local_vamp_lib_osx)
-        conf.check(lib = 'vamp-sdk', mandatory = False)
+            local_vamp_lib = local_vamp_lib_osx
+        local_vamp_lib = os.path.join(local_vamp_lib, 'libvamp-sdk.a')
+        if os.path.isfile(local_vamp_lib):
+            conf.env.append_value('SHLIB_MARKER', os.path.join('..',local_vamp_lib))
+        #conf.check(lib = 'vamp-sdk', mandatory = False)
     else:
         conf.check_cfg (package='vamp-sdk', uselib_store = 'VAMP',
                 args=['--cflags','--libs'], mandatory=True)
