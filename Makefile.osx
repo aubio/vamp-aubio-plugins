@@ -10,20 +10,24 @@
 #CFLAGS		:= -Wall -Wextra -g -fPIC
 
 # ... or for a release build
-CFLAGS		:= -Wall -Wextra -O3 -ftree-vectorize -fPIC
+CFLAGS		:= -Wall -Wextra -O3 -g -fPIC $(CFLAGS)
+
+# use local static aubio, built with ./scripts/get_aubio.sh
+AUBIO_LDFLAGS := ./contrib/aubio/build/src/libaubio.a
+AUBIO_LDFLAGS += -framework Accelerate
 
 # Flags to determine processor architecture and system SDK
-ARCHFLAGS	?= -mmacosx-version-min=10.6 -arch x86_64
+ARCHFLAGS	?= -mmacosx-version-min=10.11 -stdlib=libc++
 
 # Location of Vamp plugin SDK relative to the project directory
-VAMPSDK_DIR	:= ../vamp-plugin-sdk-2.5
+VAMPSDK_DIR    := ./contrib/vamp-plugin-sdk-2.6
 
 # Location of libvamp-sdk.dylib
-VAMPBIN_DIR ?= ../vamp-plugin-sdk-2.5-binaries-osx
+VAMPBIN_DIR ?= ./contrib/vamp-plugin-sdk-2.6-binaries-osx
 
 # Libraries and linker flags required by plugin: add any -l<library>
 # options here
-PLUGIN_LDFLAGS	:= -dynamiclib -exported_symbols_list=vamp-plugin.list -L$(VAMPBIN_DIR) -lvamp-sdk
+PLUGIN_LDFLAGS	:= -dynamiclib $(AUBIO_LDFLAGS) $(VAMPBIN_DIR)/libvamp-sdk.a -exported_symbols_list=vamp-plugin.list
 
 # File extension for plugin library on this platform
 PLUGIN_EXT	:= .dylib
