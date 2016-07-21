@@ -13,15 +13,15 @@
 #   $ make -f Makefile.mingw
 
 # Defaults, overridden from the platform-specific Makefile
-VAMPSDK_DIR	?= ../vamp-plugin-sdk-2.5
+VAMPSDK_DIR	?= ./contrib/vamp-plugin-sdk-2.6
 PLUGIN_EXT	?= .so
 CXX 		?= g++
 CC 		?= gcc
 
 CFLAGS		:= $(ARCHFLAGS) $(CFLAGS)
-CXXFLAGS	:= $(CFLAGS) -I. -I$(VAMPSDK_DIR) $(CXXFLAGS)
+CXXFLAGS	:= $(CFLAGS) -I$(VAMPSDK_DIR) $(CXXFLAGS)
 
-LDFLAGS		:= -L$(VAMPSDK_DIR) -laubio $(LDFLAGS)
+LDFLAGS		:= $(ARCHFLAGS) -L$(VAMPSDK_DIR) $(LDFLAGS)
 PLUGIN_LDFLAGS	:= $(LDFLAGS) $(PLUGIN_LDFLAGS)
 
 # Location of our plugins
@@ -31,6 +31,9 @@ PLUGINDIR	= plugins
 PLUGIN_OBJECTS	= libmain.o $(patsubst %.cpp,%.o,$(wildcard $(PLUGINDIR)/*.cpp))
 PLUGIN_HEADERS	= $(patsubst %.cpp,%.h,$(wildcard $(PLUGINDIR)/*.cpp))
 PLUGIN_TARGET	= vamp-aubio$(PLUGIN_EXT)
+
+# use local aubio, can be build with ./scripts/get_aubio.sh
+CXXFLAGS := $(CXXFLAGS) -I./contrib/aubio-dist/include
 
 all:		$(PLUGIN_TARGET)
 
@@ -42,3 +45,4 @@ clean:
 
 distclean:	clean
 		rm -f $(PLUGIN_TARGET) *~ */*~
+
