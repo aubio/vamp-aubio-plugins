@@ -9,6 +9,7 @@ local_aubio_lib      = 'contrib/aubio-dist/lib'
 local_vamp_include   = 'contrib/vamp-plugin-sdk-2.6'
 local_vamp_lib_i686  = 'contrib/vamp-plugin-sdk-2.6-binaries-i686-linux'
 local_vamp_lib_amd64 = 'contrib/vamp-plugin-sdk-2.6-binaries-amd64-linux'
+local_vamp_lib_osx = 'contrib/vamp-plugin-sdk-2.6-binaries-osx'
 
 def options(opt):
     opt.load('compiler_cxx')
@@ -27,10 +28,14 @@ def configure(conf):
     if os.path.isdir(local_vamp_include):
         conf.env.append_value('CXXFLAGS', '-I../'+local_vamp_include)
         conf.env.append_value('SHLIB_MARKER', '-lvamp-sdk')
-        if os.path.isdir(local_vamp_lib_amd64):
-            conf.env.append_value('LINKFLAGS', '-L../'+local_vamp_lib_amd64)
-        if os.path.isdir(local_vamp_lib_i686):
-            conf.env.append_value('LINKFLAGS', '-L../'+local_vamp_lib_i686)
+        if sys.platform.startswith('linux'):
+            if os.path.isdir(local_vamp_lib_amd64):
+                conf.env.append_value('LINKFLAGS', '-L../'+local_vamp_lib_amd64)
+            if os.path.isdir(local_vamp_lib_i686):
+                conf.env.append_value('LINKFLAGS', '-L../'+local_vamp_lib_i686)
+        elif sys.platform == 'darwin':
+            if os.path.isdir(local_vamp_lib_osx):
+                conf.env.append_value('LINKFLAGS', '-L../'+local_vamp_lib_osx)
         conf.check(lib = 'vamp-sdk', mandatory = False)
     else:
         conf.check_cfg (package='vamp-sdk', uselib_store = 'VAMP',
@@ -49,7 +54,10 @@ def build(bld):
     plugin_sources += bld.path.ant_glob('*.cpp')
 
     # rename libvamp-aubio to vamp-plugin binary name
-    bld.env['cxxshlib_PATTERN'] = '%s.so'
+    if sys.platform.startswith('linux'):
+        bld.env['cxxshlib_PATTERN'] = '%s.so'
+    elif sys.platform.startswith('darwin'):
+        bld.env['cxxshlib_PATTERN'] = '%s.dylib'
 
     bld.program(source = plugin_sources,
                includes = '.',
