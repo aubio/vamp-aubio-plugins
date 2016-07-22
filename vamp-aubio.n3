@@ -523,7 +523,7 @@ plugbase:aubiomfcc a   vamp:Plugin ;
     dc:title              "Aubio Mfcc Extractor" ;
     vamp:name             "Aubio Mfcc Extractor" ;
     vamp:category	  "Low Level Features" ;
-    dc:description        """Detect levels below a certain threshold""" ;
+    dc:description        """Extract Mel-Frequency Cepstrum Coefficients""" ;
     foaf:maker :maker ;
     dc:rights             """GPL""" ;
 #   cc:license            <Place plugin license URI here and uncomment> ;
@@ -559,15 +559,13 @@ plugbase:aubiomfcc_param_ncoeffs a  vamp:Parameter ;
     vamp:default_value   13 ;
     vamp:value_names     ();
     .
-plugbase:aubiomfcc_output_silencelevel a  vamp:DenseOutput ;
+plugbase:aubiomfcc_output_mfcc a  vamp:DenseOutput ;
     vamp:identifier       "mfcc" ;
     dc:title              "Mel-Frequency Cepstrum Coefficients" ;
     dc:description        """List of detected Mel-Frequency Cepstrum Coefficients""" ;
-    dc:description        """"""  ;
     vamp:fixed_bin_count  "true" ;
     vamp:unit             "" ;
-    a                     vamp:QuantizedOutput ;
-    vamp:bin_count        1 ;
+    vamp:bin_count        0 ;
     .
 plugbase:aubiomelenergy a   vamp:Plugin ;
     dc:title              "Aubio Mel-Frequency Bands Extractor" ;
