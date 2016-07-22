@@ -38,9 +38,10 @@ Onset::Onset(float inputSampleRate) :
     m_onsetdet(0),
     m_onsettype(OnsetDefault),
     m_threshold(0.3),
-    m_silence(-70),
+    m_silence(-90),
     m_minioi(4)
 {
+
 }
 
 Onset::~Onset()
@@ -115,21 +116,17 @@ Onset::reset()
          m_blockSize,
          m_stepSize,
          lrintf(m_inputSampleRate));
-    
+
     aubio_onset_set_threshold(m_onsetdet, m_threshold);
     aubio_onset_set_silence(m_onsetdet, m_silence);
     aubio_onset_set_minioi(m_onsetdet, m_minioi);
 
-    m_delay = Vamp::RealTime::frame2RealTime(4 * m_stepSize,
-                                             lrintf(m_inputSampleRate));
-
-    m_lastOnset = Vamp::RealTime::zeroTime - m_delay - m_delay;
 }
 
 size_t
 Onset::getPreferredStepSize() const
 {
-    return 512;
+    return 256;
 }
 
 size_t
@@ -179,7 +176,7 @@ Onset::getParameterDescriptors() const
     desc.description = "Silence threshold, the higher the least detection";
     desc.minValue = -120;
     desc.maxValue = 0;
-    desc.defaultValue = -70;
+    desc.defaultValue = -90;
     desc.unit = "dB";
     desc.isQuantized = false;
     list.push_back(desc);
@@ -205,11 +202,23 @@ Onset::getParameter(std::string param) const
     if (param == "onsettype") {
         return m_onsettype;
     } else if (param == "peakpickthreshold") {
-        return m_threshold;
+        if (m_onsetdet) {
+            return aubio_onset_get_threshold(m_onsetdet);
+        } else {
+            return m_threshold;
+        }
     } else if (param == "silencethreshold") {
-        return m_silence;
+        if (m_onsetdet) {
+            return aubio_onset_get_silence(m_onsetdet);
+        } else {
+            return m_silence;
+        }
     } else if (param == "minioi") {
-        return m_minioi;
+        if (m_onsetdet) {
+            return aubio_onset_get_minioi(m_onsetdet);
+        } else {
+            return m_minioi;
+        }
     } else {
         return 0.0;
     }
@@ -228,13 +237,21 @@ Onset::setParameter(std::string param, float value)
         case 5: m_onsettype = OnsetKL; break;
         case 6: m_onsettype = OnsetMKL; break;
         case 7: m_onsettype = OnsetSpecFlux; break;
+        case 8: m_onsettype = OnsetDefault; break;
         }
+        if (!m_onsetdet) initialise(1, 256, 512);
     } else if (param == "peakpickthreshold") {
         m_threshold = value;
+        if (m_onsetdet)
+            aubio_onset_set_threshold(m_onsetdet, m_threshold);
     } else if (param == "silencethreshold") {
         m_silence = value;
+        if (m_onsetdet)
+            aubio_onset_set_silence(m_onsetdet, m_silence);
     } else if (param == "minioi") {
         m_minioi = value;
+        if (m_onsetdet)
+            aubio_onset_set_minioi(m_onsetdet, m_minioi);
     }
 }
 
@@ -285,19 +302,15 @@ Onset::process(const float *const *inputBuffers,
 
     aubio_onset_do(m_onsetdet, m_ibuf, m_onset);
 
-    bool isonset = m_onset->data[0];
+    smpl_t isonset = m_onset->data[0];
 
     FeatureSet returnFeatures;
 
     if (isonset) {
-        if (timestamp - m_lastOnset >= m_delay) {
-            Feature onsettime;
-            onsettime.hasTimestamp = true;
-            if (timestamp < m_delay) timestamp = m_delay;
-            onsettime.timestamp = timestamp - m_delay;
-            returnFeatures[0].push_back(onsettime);
-            m_lastOnset = timestamp;
-        }
+        Feature onsettime;
+        onsettime.hasTimestamp = true;
+        onsettime.timestamp = Vamp::RealTime::fromSeconds(aubio_onset_get_last_s(m_onsetdet));
+        returnFeatures[0].push_back(onsettime);
     }
 
     Feature odf;
