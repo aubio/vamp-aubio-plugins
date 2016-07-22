@@ -5,35 +5,46 @@
 import sys, os, platform
 
 local_aubio_include  = 'contrib/aubio-dist/include'
-local_aubio_lib      = 'contrib/aubio-dist/lib'
+local_aubio_lib      = 'contrib/aubio/build/src'
 local_vamp_include   = 'contrib/vamp-plugin-sdk-2.6'
 local_vamp_lib_i686  = 'contrib/vamp-plugin-sdk-2.6-binaries-i686-linux'
 local_vamp_lib_amd64 = 'contrib/vamp-plugin-sdk-2.6-binaries-amd64-linux'
-local_vamp_lib_osx = 'contrib/vamp-plugin-sdk-2.6-binaries-osx'
+local_vamp_lib_osx   = 'contrib/vamp-plugin-sdk-2.6-binaries-osx'
+local_vamp_lib_win32 = 'contrib'
+
 
 def options(opt):
     opt.load('compiler_cxx')
 
 def configure(conf):
     conf.load('compiler_cxx')
+    local_aubio_stlib    = 'libaubio.a'
+    local_vamp_stlib     = 'libvamp-sdk.a'
 
-    if os.path.isdir(local_aubio_include):
+    if sys.platform.startswith('linux'):
+        if platform.machine() == 'x86_64':
+            local_vamp_lib = local_vamp_lib_amd64
+        elif platform.machine() == 'x86_64':
+            local_vamp_lib = local_vamp_lib_i686
+    elif sys.platform == 'darwin':
+        local_vamp_lib = local_vamp_lib_osx
+    elif sys.platform == 'win32':
+        local_vamp_lib = local_vamp_lib_win32
+        local_vamp_stlib = 'VampPluginSDK.lib'
+        local_aubio_stlib = 'aubio.lib'
+
+    local_aubio_stlib = os.path.join(local_aubio_lib, local_aubio_stlib)
+    local_vamp_stlib = os.path.join(local_vamp_lib, local_vamp_stlib)
+
+    if os.path.isdir(local_aubio_include) and os.path.isfile(local_aubio_stlib):
         conf.env.append_value('CXXFLAGS', '-I../'+local_aubio_include)
-        conf.env.append_value('LINKFLAGS', '-L../'+local_aubio_lib)
-        conf.env.append_value('LINKFLAGS', '-laubio')
+        conf.env.append_value('SHLIB_MARKER', os.path.join('..',local_aubio_stlib))
     else:
         conf.check_cfg (package='aubio', uselib_store='AUBIO',
                 args=['--cflags', '--libs'], mandatory=True)
 
     if os.path.isdir(local_vamp_include):
         conf.env.append_value('CXXFLAGS', '-I../'+local_vamp_include)
-        if sys.platform.startswith('linux'):
-            if platform.machine() == 'x86_64':
-                local_vamp_lib = local_vamp_lib_amd64
-            elif platform.machine() == 'x86_64':
-                local_vamp_lib = local_vamp_lib_i686
-        elif sys.platform == 'darwin':
-            local_vamp_lib = local_vamp_lib_osx
         local_vamp_lib = os.path.join(local_vamp_lib, 'libvamp-sdk.a')
         if os.path.isfile(local_vamp_lib):
             conf.env.append_value('SHLIB_MARKER', os.path.join('..',local_vamp_lib))
