@@ -2,17 +2,17 @@ language: python
 
 matrix:
   include:
-    - os: linux
-      compiler: gcc
+    - language: C++
+      os: linux
       env: ARCH=x86_64
-    - os: linux
-      compiler: gcc
+    - language: C++
+      os: linux
       env: ARCH=i386
-    - language: C
+    - language: C++
       os: osx
       compiler: clang
       env: ARCH=x86_64
-    - language: C
+    - language: C++
       os: osx
       compiler: clang
       env: ARCH=i386
@@ -28,7 +28,7 @@ addons:
 
 script:
   - ./scripts/get_waf.sh
-  - ./scripts/get_aubio.h
+  - ./scripts/get_aubio.sh
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./scripts/get_deps_linux.sh; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./scripts/get_deps_osx.sh; fi
   - python waf configure
