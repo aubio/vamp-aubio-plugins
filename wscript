@@ -17,7 +17,14 @@ def options(opt):
     opt.load('compiler_cxx')
 
 def configure(conf):
-    conf.load('compiler_cxx')
+    if sys.platform.startswith('win'):
+        # build same binary version as current vamp-plugin-sdk
+        # currently Visual Studio 2013 (x86),
+        conf.env.MSVC_VERSIONS = ['msvc 12.0']
+        conf.env.MSVC_TARGETS = ['x86']
+        conf.load('msvc')
+    else:
+        conf.load('compiler_cxx')
     local_aubio_stlib    = 'libaubio.a'
     local_vamp_stlib     = 'libvamp-sdk.a'
 
@@ -85,7 +92,10 @@ def build(bld):
         bld.env['cxxshlib_PATTERN'] = '%s.dylib'
         install_path = '/Library/Audio/Plug-Ins/Vamp'
     elif sys.platform.startswith('win32'):
-        install_path = None
+        if platform.machine() == 'AMD64':
+             install_path = 'C:\\Program Files (x86)\\Vamp Plugins'
+        else:
+             install_path = 'C:\\Program Files\\Vamp Plugins'
 
     bld.program(source = plugin_sources,
                includes = '.',
