@@ -96,7 +96,8 @@ def build(bld):
                install_path = install_path
                )
 
-    bld.install_files( install_path, ['vamp-aubio.cat', 'vamp-aubio.n3'])
+    if install_path:
+        bld.install_files( install_path, ['vamp-aubio.cat', 'vamp-aubio.n3'])
 
     #for k in bld.env.keys():
     #    print ("%s : %s", k, bld.env[k] )
