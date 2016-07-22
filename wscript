@@ -59,6 +59,13 @@ def configure(conf):
         conf.env.append_value('LINKFLAGS', '-Wl,-z,defs')
         # add plugin.map
         conf.env.append_value('LINKFLAGS', '-Wl,--version-script=../vamp-plugin.map')
+    elif sys.platform == 'win32':
+        conf.env.append_value('CXXFLAGS', '/W4')
+        conf.env.append_value('CXXFLAGS', '/EHsc')
+        #conf.env.append_value('CXXFLAGS', '/D_CRT_SECURE_NO_WARNINGS')
+        #, '/DWIN32', '/D_WINDOWS', '/D_USRDLL', '/D_WINDLL'
+        conf.env.append_value('LINKFLAGS', '/EXPORT:vampGetPluginDescriptor')
+        conf.env.append_value('LINKFLAGS', '/NODEFAULTLIB:LIBCMT')
 
 def build(bld):
     # Host Library
