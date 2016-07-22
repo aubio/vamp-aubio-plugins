@@ -66,6 +66,8 @@ def configure(conf):
         #, '/DWIN32', '/D_WINDOWS', '/D_USRDLL', '/D_WINDLL'
         conf.env.append_value('LINKFLAGS', '/EXPORT:vampGetPluginDescriptor')
         conf.env.append_value('LINKFLAGS', '/NODEFAULTLIB:LIBCMT')
+    elif sys.platform == 'darwin':
+        conf.env.FRAMEWORK += ['Accelerate']
 
 def build(bld):
     # Host Library
