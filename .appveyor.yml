@@ -1,0 +1,12 @@
+# appveyor configuration. See http://www.appveyor.com/docs/appveyor-yml
+
+platform:
+  - x86
+  - Any CPU
+
+build_script:
+  - ./scripts/get_waf.sh
+  - ./scripts/get_aubio.sh
+  - ./scripts/get_deps_msvc.sh
+  - python waf configure
+  - python waf build -v
