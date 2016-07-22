@@ -53,9 +53,12 @@ def configure(conf):
         conf.check_cfg (package='vamp-sdk', uselib_store = 'VAMP',
                 args=['--cflags','--libs'], mandatory=True)
 
+    if conf.env.CC_NAME != 'msvc':
+        conf.env.CXXFLAGS += ['-g', '-Wall', '-Wextra']
+
     if sys.platform.startswith('linux'):
-        conf.env['CXXFLAGS'] += ['-Wall', '-Wextra', '-O3', '-msse', '-msse2',
-                '-mfpmath=sse', '-ftree-vectorize']
+        conf.env['CXXFLAGS'] += ['-O3', '-msse', '-msse2', '-mfpmath=sse',
+                '-ftree-vectorize']
         conf.env.append_value('LINKFLAGS', '-Wl,-z,defs')
         # add plugin.map
         conf.env.append_value('LINKFLAGS', '-Wl,--version-script=../vamp-plugin.map')
