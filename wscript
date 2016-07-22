@@ -77,16 +77,23 @@ def build(bld):
     # rename libvamp-aubio to vamp-plugin binary name
     if sys.platform.startswith('linux'):
         bld.env['cxxshlib_PATTERN'] = '%s.so'
+        install_path = '${LIBDIR}/vamp'
     elif sys.platform.startswith('darwin'):
         bld.env['cxxshlib_PATTERN'] = '%s.dylib'
+        install_path = '/Library/Audio/Plug-Ins/Vamp'
+    elif sys.platform.startswith('win32'):
+        install_path = None
 
     bld.program(source = plugin_sources,
                includes = '.',
                target = 'vamp-aubio',
                name = 'vamp-aubio',
                use = ['VAMP', 'AUBIO'],
-               features = 'cxx cxxshlib'
+               features = 'cxx cxxshlib',
+               install_path = install_path
                )
+
+    bld.install_files( install_path, ['vamp-aubio.cat', 'vamp-aubio.n3'])
 
     #for k in bld.env.keys():
     #    print ("%s : %s", k, bld.env[k] )
