@@ -1,0 +1,41 @@
+language: python
+
+matrix:
+  include:
+      os: linux
+      compiler: gcc
+      env: ARCH=x86_64
+      os: linux
+      compiler: gcc
+      env: ARCH=i386
+    - language: C
+      os: osx
+      compiler: clang
+      env: ARCH=x86_64
+    - language: C
+      os: osx
+      compiler: clang
+      env: ARCH=i386
+
+addons:
+  apt:
+    packages:
+    - bzip2
+    - libsndfile1-dev
+    - libsamplerate-dev
+    - libjack-dev
+    - libasound2-dev
+
+script:
+  - ./scripts/get_waf.sh
+  - ./scripts/get_aubio.h
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./scripts/get_deps_linux.sh; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./scripts/get_deps_osx.sh; fi
+  - python waf configure
+  - python waf build
+
+notifications:
+    irc:
+        channels:
+            - "irc.freenode.org#aubio"
+        use_notice: true
