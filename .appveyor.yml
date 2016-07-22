@@ -2,11 +2,11 @@
 
 platform:
   - x86
-  - Any CPU
+  - x64
 
 build_script:
-  - ./scripts/get_waf.sh
-  - ./scripts/get_aubio.sh
-  - ./scripts/get_deps_msvc.sh
+  - sh scripts/get_waf.sh
+  - sh scripts/get_aubio.sh
+  - sh scripts/get_deps_msvc.sh
   - python waf configure
   - python waf build -v
