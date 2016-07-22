@@ -30,7 +30,7 @@ script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./scripts/get_deps_linux.sh; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./scripts/get_deps_osx.sh; fi
   - python waf configure
-  - python waf build
+  - python waf build -v
 
 notifications:
     irc:
