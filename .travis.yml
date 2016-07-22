@@ -2,17 +2,17 @@ language: python
 
 matrix:
   include:
-    - language: C++
+    - language: cpp
       os: linux
       env: ARCH=x86_64
-    - language: C++
+    - language: cpp
       os: linux
       env: ARCH=i386
-    - language: C++
+    - language: cpp
       os: osx
       compiler: clang
       env: ARCH=x86_64
-    - language: C++
+    - language: cpp
       os: osx
       compiler: clang
       env: ARCH=i386
