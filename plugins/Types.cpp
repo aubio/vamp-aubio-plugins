@@ -29,7 +29,7 @@ const char *getAubioNameForOnsetType(OnsetType t)
 {
     // In the same order as the enum elements in the header
     static const char *const names[] = {
-        "energy", "specdiff", "hfc", "complex", "phase", "kl", "mkl", "specflux"
+        "energy", "specdiff", "hfc", "complex", "phase", "kl", "mkl", "specflux", "default"
     };
     return names[(int)t];
 }

@@ -36,7 +36,7 @@ Onset::Onset(float inputSampleRate) :
     m_ibuf(0),
     m_onset(0),
     m_onsetdet(0),
-    m_onsettype(OnsetComplex),
+    m_onsettype(OnsetDefault),
     m_threshold(0.3),
     m_silence(-70),
     m_minioi(4)
@@ -149,7 +149,7 @@ Onset::getParameterDescriptors() const
     desc.description = "Type of onset detection function to use";
     desc.minValue = 0;
     desc.maxValue = 7;
-    desc.defaultValue = (int)OnsetComplex;
+    desc.defaultValue = (int)OnsetDefault;
     desc.isQuantized = true;
     desc.quantizeStep = 1;
     desc.valueNames.push_back("Energy Based");
@@ -160,6 +160,7 @@ Onset::getParameterDescriptors() const
     desc.valueNames.push_back("Kullback-Liebler");
     desc.valueNames.push_back("Modified Kullback-Liebler");
     desc.valueNames.push_back("Spectral Flux");
+    desc.valueNames.push_back("Default");
     list.push_back(desc);
 
     desc = ParameterDescriptor();
