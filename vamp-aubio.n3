@@ -601,11 +601,9 @@ plugbase:aubiomelenergy_output_melenergy a  vamp:DenseOutput ;
     vamp:identifier       "melenergy" ;
     dc:title              "Mel-Frequency Cepstrum Coefficients" ;
     dc:description        """List of measured energy in each Mel-frequency bands""" ;
-    dc:description        """"""  ;
     vamp:fixed_bin_count  "true" ;
     vamp:unit             "" ;
-    a                     vamp:QuantizedOutput ;
-    vamp:bin_count        1 ;
+    vamp:bin_count        0 ;
     .
 plugbase:aubiospecdesc a   vamp:Plugin ;
     dc:title              "Aubio Spectral Descriptor" ;
