@@ -199,8 +199,8 @@ Mfcc::getOutputDescriptors() const
     d.hasFixedBinCount = true;
     d.binCount = m_ncoeffs;
     d.isQuantized = true;
-    d.sampleType = OutputDescriptor::FixedSampleRate;
-    d.sampleRate = OutputDescriptor::OneSamplePerStep;
+    d.quantizeStep = 1.0;
+    d.sampleType = OutputDescriptor::OneSamplePerStep;
     list.push_back(d);
 
     return list;
