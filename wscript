@@ -46,8 +46,8 @@ def configure(conf):
     if os.path.isdir(local_vamp_include):
         conf.env.append_value('CXXFLAGS', '-I../'+local_vamp_include)
         local_vamp_lib = os.path.join(local_vamp_lib, 'libvamp-sdk.a')
-        if os.path.isfile(local_vamp_lib):
-            conf.env.append_value('SHLIB_MARKER', os.path.join('..',local_vamp_lib))
+        if os.path.isfile(local_vamp_stlib):
+            conf.env.append_value('SHLIB_MARKER', os.path.join('..',local_vamp_stlib))
         #conf.check(lib = 'vamp-sdk', mandatory = False)
     else:
         conf.check_cfg (package='vamp-sdk', uselib_store = 'VAMP',
