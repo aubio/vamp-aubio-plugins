@@ -26,6 +26,13 @@
 #ifndef _ONSET_TYPE_H_
 #define _ONSET_TYPE_H_
 
+/** silence unused parameter warning by adding an attribute */
+#if defined(__GNUC__)
+#define UNUSED __attribute__((unused))
+#else
+#define UNUSED
+#endif
+
 // Note: the enum values in this header are ordered to match the Vamp
 // plugin parameter values in earlier versions of this plugin set, to
 // avoid breaking stored parameter settings that use the parameter's
