@@ -12,7 +12,7 @@ pushd aubio
 ./scripts/get_waf.sh
 #./waf distclean
 ./waf configure --prefix=$PWD/../aubio-dist $WAFOPTS
-./waf build -v
-./waf install -v
+./waf build -v $WAFOPTS
+./waf install -v $WAFOPTS
 popd
 popd
