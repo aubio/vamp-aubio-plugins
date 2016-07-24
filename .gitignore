@@ -8,3 +8,6 @@ vamp-aubio.dylib
 vamp-aubio.dll
 libmain.so
 *.o
+
+waf
+contrib/
