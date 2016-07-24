@@ -65,7 +65,7 @@ def configure(conf):
         conf.check_cfg (package='vamp-sdk', uselib_store = 'VAMP',
                 args=['--cflags','--libs'], mandatory=True)
 
-    if conf.env.CC_NAME != 'msvc':
+    if conf.env.CXX_NAME != 'msvc':
         conf.env.CXXFLAGS += ['-g', '-Wall', '-Wextra']
 
     if sys.platform.startswith('linux'):
@@ -79,12 +79,14 @@ def configure(conf):
             # add plugin.map
             conf.env.append_value('LINKFLAGS', '-Wl,--version-script=../vamp-plugin.map')
     elif sys.platform == 'win32':
+        conf.env.append_value('CXXFLAGS', '/MD')
         conf.env.append_value('CXXFLAGS', '/W4')
         conf.env.append_value('CXXFLAGS', '/EHsc')
         #conf.env.append_value('CXXFLAGS', '/D_CRT_SECURE_NO_WARNINGS')
         #, '/DWIN32', '/D_WINDOWS', '/D_USRDLL', '/D_WINDLL'
         conf.env.append_value('LINKFLAGS', '/EXPORT:vampGetPluginDescriptor')
         conf.env.append_value('LINKFLAGS', '/NODEFAULTLIB:LIBCMT')
+        conf.env.append_value('LINKFLAGS', '/NODEFAULTLIB:LIBPCMT')
     elif sys.platform == 'darwin':
         conf.env.FRAMEWORK += ['Accelerate']
 
