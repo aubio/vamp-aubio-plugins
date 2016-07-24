@@ -9,6 +9,8 @@ local_aubio_lib      = 'contrib/aubio/build/src'
 local_vamp_include   = 'contrib/vamp-plugin-sdk-2.6'
 local_vamp_lib_i686  = 'contrib/vamp-plugin-sdk-2.6-binaries-i686-linux'
 local_vamp_lib_amd64 = 'contrib/vamp-plugin-sdk-2.6-binaries-amd64-linux'
+# using debian/stable (jessie), the stdc++ abi seems broken. recompile it.
+local_vamp_lib_mingw = 'contrib/vamp-plugin-sdk-2.6' #-binaries-win32-mingw'
 local_vamp_lib_osx   = 'contrib/vamp-plugin-sdk-2.6-binaries-osx'
 local_vamp_lib_win32 = 'contrib'
 
@@ -29,7 +31,9 @@ def configure(conf):
     local_vamp_stlib     = 'libvamp-sdk.a'
 
     if sys.platform.startswith('linux'):
-        if platform.machine() == 'x86_64':
+        if 'mingw' in conf.env.CXX[0]:
+            local_vamp_lib = local_vamp_lib_mingw
+        elif platform.machine() == 'x86_64':
             local_vamp_lib = local_vamp_lib_amd64
         elif platform.machine() == 'x86_64':
             local_vamp_lib = local_vamp_lib_i686
@@ -67,9 +71,13 @@ def configure(conf):
     if sys.platform.startswith('linux'):
         conf.env['CXXFLAGS'] += ['-O3', '-msse', '-msse2', '-mfpmath=sse',
                 '-ftree-vectorize']
-        conf.env.append_value('LINKFLAGS', '-Wl,-z,defs')
-        # add plugin.map
-        conf.env.append_value('LINKFLAGS', '-Wl,--version-script=../vamp-plugin.map')
+        if 'mingw' in conf.env.CXX[0]:
+            conf.env.append_value('LINKFLAGS', '-Wl,--enable-auto-import')
+            conf.env.append_value('LINKFLAGS', '-Wl,--retain-symbols-file=../vamp-plugin.list')
+        else:
+            conf.env.append_value('LINKFLAGS', '-Wl,-z,defs')
+            # add plugin.map
+            conf.env.append_value('LINKFLAGS', '-Wl,--version-script=../vamp-plugin.map')
     elif sys.platform == 'win32':
         conf.env.append_value('CXXFLAGS', '/W4')
         conf.env.append_value('CXXFLAGS', '/EHsc')
@@ -86,7 +94,10 @@ def build(bld):
     plugin_sources += bld.path.ant_glob('*.cpp')
 
     # rename libvamp-aubio to vamp-plugin binary name
-    if sys.platform.startswith('linux'):
+    if 'mingw' in bld.env.CXX[0]:
+        bld.env['cxxshlib_PATTERN'] = '%s.dll'
+        install_path = None
+    elif sys.platform.startswith('linux'):
         bld.env['cxxshlib_PATTERN'] = '%s.so'
         install_path = '${LIBDIR}/vamp'
     elif sys.platform.startswith('darwin'):

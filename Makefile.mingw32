@@ -7,16 +7,18 @@
 ##  instead so that it can be included by all platform Makefiles.
 
 # Location of Vamp plugin SDK relative to the project directory
-VAMPSDK_DIR	?= ../vamp-plugin-sdk-2.5
+VAMPSDK_DIR	?= ./contrib/vamp-plugin-sdk-2.6
 
 # Location of libvamp-sdk.dll
-VAMPBIN_DIR ?= ../vamp-plugin-sdk-2.5-binaries-win32-mingw
+#VAMPBIN_DIR ?= ./contrib/vamp-plugin-sdk-2.6-binaries-win32-mingw
+VAMPBIN_DIR ?= ./contrib/vamp-plugin-sdk-2.6
 
 # Location of cross compiled and installed aubio tree
-AUBIO_MINGW32_DISTDIR ?= ../aubio-dist-mingw32
+AUBIO_MINGW32_DISTDIR ?= ./contrib/aubio-dist
 
 # Toolchain prefix
-TOOLPREFIX     ?= i586-mingw32msvc-
+# on debian/ubuntu systems, you will want to install g++-mingw-w64-i686
+TOOLPREFIX     ?= i686-w64-mingw32-
 
 CXX		= $(TOOLPREFIX)g++
 CC		= $(TOOLPREFIX)gcc
@@ -31,16 +33,18 @@ RANLIB		= $(TOOLPREFIX)ranlib
 CFLAGS		:= -Wall -Wextra -O3 -ftree-vectorize
 
 # add AUBIO_MINGW32_DISTDIR to ARCHFLAGS
-ARCHFLAGS := -I$(AUBIO_MINGW32_DISTDIR)/usr/local/include
+ARCHFLAGS := -I$(AUBIO_MINGW32_DISTDIR)/include
 
 # add AUBIO_MINGW32_DISTDIR to PLUGIN_LDFLAGS
-PLUGIN_LDFLAGS  := -L$(AUBIO_MINGW32_DISTDIR)/usr/local/lib
+PLUGIN_LDFLAGS  := 
 
 # Libraries and linker flags required by plugin: add any -l<library>
 # options here
 PLUGIN_LDFLAGS  += -Wl,--enable-auto-import
-PLUGIN_LDFLAGS  += -shared -Wl,--retain-symbols-file=vamp-plugin.list
-PLUGIN_LIBS     := $(VAMPBIN_DIR)/libvamp-sdk.dll
+PLUGIN_LDFLAGS  += -fno-exceptions -static -static-libgcc 
+PLUGIN_LDFLAGS  += -shared -Wl,-Bsymbolic
+PLUGIN_LDFLAGS  += -Wl,--retain-symbols-file=vamp-plugin.list
+PLUGIN_LIBS     := $(AUBIO_MINGW32_DISTDIR)/lib/libaubio.dll.a $(VAMPBIN_DIR)/libvamp-sdk.a
 
 # File extension for plugin library on this platform
 PLUGIN_EXT	:= .dll
