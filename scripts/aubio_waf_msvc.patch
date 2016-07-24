@@ -1,5 +1,5 @@
 diff --git a/scripts/get_aubio.sh b/scripts/get_aubio.sh
-index d3a5a71..9cd413c 100755
+index 9d42234..068d889 100755
 --- a/scripts/get_aubio.sh
 +++ b/scripts/get_aubio.sh
 @@ -11,7 +11,7 @@ git clone https://github.com/aubio/aubio aubio || ( pushd aubio; git pull; popd
@@ -7,7 +7,7 @@ index d3a5a71..9cd413c 100755
  ./scripts/get_waf.sh
  #./waf distclean
 -./waf configure --prefix=$PWD/../aubio-dist $WAFOPTS
-+./waf configure --prefix=$PWD/../aubio-dist --msvc_version='msvc 12.0' --msvc_target='x86'
- ./waf build -v
- ./waf install -v
++./waf configure --prefix=$PWD/../aubio-dist --msvc_version='msvc 12.0' --msvc_target='x86' $WAFOPTS
+ ./waf build -v $WAFOPTS
+ ./waf install -v $WAFOPTS
  popd
