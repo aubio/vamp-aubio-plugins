@@ -79,7 +79,7 @@ def configure(conf):
             # add plugin.map
             conf.env.append_value('LINKFLAGS', '-Wl,--version-script=../vamp-plugin.map')
     elif sys.platform == 'win32':
-        conf.env.append_value('CXXFLAGS', '/MD')
+        #conf.env.append_value('CXXFLAGS', '/MD')
         conf.env.append_value('CXXFLAGS', '/W4')
         conf.env.append_value('CXXFLAGS', '/EHsc')
         #conf.env.append_value('CXXFLAGS', '/D_CRT_SECURE_NO_WARNINGS')
