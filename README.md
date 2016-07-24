@@ -36,36 +36,42 @@ This set includes the following plugins:
 Build Instructions
 ------------------
 
-Please refer to the detailed instructions to build vamp-aubio-plugins for your
-platform in the following files:
+You will need to have Python, git, and a C++ compiler.
 
-  - `INSTALL.osx` for Mac OS X
-  - `INSTALL.linux64` for Linux amd64
-  - `INSTALL.linux32` for Linux i686
-  - `INSTALL.mingw32` to cross-compile using [Mingw](http://www.mingw.org/)
+Please refer to the build script corresponding for your platform for brief
+instructions on how to build this project:
 
-You can try running the corresponding file directly from the current directory.
-For instance, on a `Linux x86_64` host:
+## Available OS scripts
 
-    $ sh INSTALL.osx
+  - `./build_linux.sh` for Linux
+  - `./build_osx.sh` for Mac OS X
+  - `./build_win32.sh` for Windows (32-bit)
+  - `./build_ming32.sh` to cross-compile using [Mingw](http://www.mingw.org/)
 
-### Linux
+## Windows
 
-Use Makefile.linux to compile vamp-aubio-plugins:
+The preferred compiler on windows is Microsoft Visual 2013. Also you will want
+to use a shell environment, for instance Git Bash, and have Python installed
+and found in the PATH.
 
-    $ make -f Makefile.linux clean all
+### Clean up
 
-### Mac OS X
+Use the following command to start from scratch:
 
-Use Makefile.osx to compile vamp-aubio-plugins:
+    $ rm -rf contrib/ build/
 
-    $ make -f Makefile.linux clean all
+Old-school makefiles
+--------------------
 
-### Windows
+This method is now considered **deprecated**.
 
-Use Makefile.mingw32 to compile vamp-aubio-plugins:
+The current build system is waf. See above, and read `wscript` and `build*.sh`
+to find out how to use it. Makefiles are kept for the record, but they might be
+out of date and will eventually disappear.
 
-    $ make -f Makefile.mingw32 clean all
+   $ make -f Makefile.<os_name> clean all
+
+where `os_name` should be replaced by one of `linux`, `mingw32`, or `osx`.
 
 Installation Instructions
 -------------------------
