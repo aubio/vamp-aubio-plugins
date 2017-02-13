@@ -26,7 +26,7 @@ patch -p1 < scripts/aubio_waf_msvc.patch
 sh scripts/get_aubio.sh
 
 # revert patch
-patch -R -p2 < scripts/aubio_waf_msvc.patch
+patch -R -p1 < scripts/aubio_waf_msvc.patch
 
 # configure and build plugin
 python waf configure
