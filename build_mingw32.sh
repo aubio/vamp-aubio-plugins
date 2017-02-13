@@ -2,14 +2,23 @@
 
 # cross compile vamp-aubio-plugins using mingw32 toolchain
 
+. $PWD/VERSION
+VAMP_AUBIO_VERSION=$VAMP_AUBIO_MAJOR_VERSION.$VAMP_AUBIO_MINOR_VERSION.$VAMP_AUBIO_PATCH_VERSION$VAMP_AUBIO_VERSION_STATUS
+
 set -e
 set -x
+
+if [ "$1" = 'dist' ]
+then
+  rm -rf contrib/
+fi
 
 export CFLAGS="-Os"
 #export CC="i586-mingw32msvc-gcc"
 #export CXX="i586-mingw32msvc-g++"
 export CC="i686-w64-mingw32-gcc"
 export CXX="i686-w64-mingw32-g++"
+export STRIP="i686-w64-mingw32-strip"
 export WAFOPTS="--with-target-platform=win32 --disable-sndfile --disable-samplerate --disable-jack --disable-avcodec --notests"
 
 # get waf
@@ -27,4 +36,17 @@ export WAFOPTS="--with-target-platform=win32 --disable-sndfile --disable-sampler
 ./waf build -v
 
 # system-wide installation
-# sudo ./waf install
+#./waf install --destdir=dist-win
+
+if [ "$1" = 'dist' ]
+then
+  DESTDIR=vamp-aubio-plugins-$VAMP_AUBIO_VERSION-win32
+  rm -rf $DESTDIR $DESTDIR.zip
+  mkdir $DESTDIR
+  cp -prv contrib/aubio*/README.md $DESTDIR/README.aubio.md
+  cp -prv README.md $DESTDIR
+  cp -prv build/vamp-aubio.dll $DESTDIR
+  $STRIP $DESTDIR/vamp-aubio.dll
+  cp -prv vamp-aubio.cat vamp-aubio.n3 $DESTDIR
+  zip -r $DESTDIR.zip $DESTDIR
+fi
