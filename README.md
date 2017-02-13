@@ -6,8 +6,6 @@ using the [aubio library](http://aubio.org/).
 
 This set includes the following plugins:
 
- - Spectral Descriptors
-
   - Aubio Beat Tracker
     - *Time → Tempo*
     - Estimate the musical tempo and track beat positions.
