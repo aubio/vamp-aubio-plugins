@@ -35,7 +35,7 @@ then
   mkdir $DESTDIR
   cp -prv contrib/aubio*/README.md $DESTDIR/README.aubio.md
   cp -prv README.md $DESTDIR
-  cp -prv build/vamp-aubio.dll $DESTDIR
+  cp -prv build/vamp-aubio.so $DESTDIR
   strip $DESTDIR/vamp-aubio.so
   cp -prv vamp-aubio.cat vamp-aubio.n3 $DESTDIR
   tar jcvf $DESTDIR.tar.bz2 $DESTDIR
