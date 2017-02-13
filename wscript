@@ -125,3 +125,11 @@ def build(bld):
 
     #for k in bld.env.keys():
     #    print ("%s : %s", k, bld.env[k] )
+
+def dist(ctx):
+    ctx.excl  =  '**/.waf-1* **/*~ **/*.pyc **/*.swp **/.lock-w* **/.git*'
+    ctx.excl += ' **/**.tar.bz2'
+    ctx.excl += ' contrib/**'
+    ctx.excl += ' build/**'
+    ctx.excl += ' **/.travis.yml'
+    ctx.excl += ' **/.appveyor.yml'
