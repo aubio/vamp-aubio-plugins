@@ -3,7 +3,7 @@
 set -e
 set -x
 
-source VERSION
+source $PWD/VERSION
 
 mkdir -p contrib
 pushd contrib
