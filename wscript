@@ -138,6 +138,7 @@ def build(bld):
 def dist(ctx):
     ctx.excl  =  '**/.waf-1* **/*~ **/*.pyc **/*.swp **/.lock-w* **/.git*'
     ctx.excl += ' **/**.tar.bz2'
+    ctx.excl += ' **/**.o **/**.so'
     ctx.excl += ' contrib/**'
     ctx.excl += ' build/**'
     ctx.excl += ' dist/**'
