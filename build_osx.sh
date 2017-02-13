@@ -32,7 +32,6 @@ fi
 
 if [ "$1" = 'dist' ]
 then
-  ARCH=$(lscpu  | head -1  | awk '{print $2}')
   DESTDIR=vamp-aubio-plugins-$VAMP_AUBIO_VERSION-osx
   rm -rf $DESTDIR $DESTDIR.zip
   mkdir $DESTDIR
