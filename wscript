@@ -4,6 +4,16 @@
 
 import sys, os, platform
 
+APPNAME = 'vamp-aubio-plugins'
+
+for l in open('VERSION').readlines(): exec (l.strip())
+
+VERSION = '.'.join ([str(x) for x in [
+    VAMP_AUBIO_MAJOR_VERSION,
+    VAMP_AUBIO_MINOR_VERSION,
+    VAMP_AUBIO_PATCH_VERSION
+    ]]) + VAMP_AUBIO_VERSION_STATUS
+
 local_aubio_include  = 'contrib/aubio-dist/include'
 local_aubio_lib      = 'contrib/aubio/build/src'
 local_vamp_include   = 'contrib/vamp-plugin-sdk-2.6'
