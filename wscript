@@ -15,7 +15,7 @@ VERSION = '.'.join ([str(x) for x in [
     ]]) + VAMP_AUBIO_VERSION_STATUS
 
 local_aubio_include  = 'contrib/aubio-dist/include'
-local_aubio_lib      = 'contrib/aubio/build/src'
+local_aubio_lib      = 'contrib/aubio-dist/lib'
 local_vamp_include   = 'contrib/vamp-plugin-sdk-2.6'
 local_vamp_lib_i686  = 'contrib/vamp-plugin-sdk-2.6-binaries-i686-linux'
 local_vamp_lib_amd64 = 'contrib/vamp-plugin-sdk-2.6-binaries-amd64-linux'
