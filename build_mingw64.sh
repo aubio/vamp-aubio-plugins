@@ -2,6 +2,10 @@
 
 # cross compile vamp-aubio-plugins using mingw32 toolchain
 
+echo "ERROR: This script does not produce a binary loadable by sonic visualiser."
+echo "Comment the following line to run it anyway."
+exit 1
+
 . $PWD/VERSION
 VAMP_AUBIO_VERSION=$VAMP_AUBIO_MAJOR_VERSION.$VAMP_AUBIO_MINOR_VERSION.$VAMP_AUBIO_PATCH_VERSION$VAMP_AUBIO_VERSION_STATUS
 
