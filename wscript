@@ -37,7 +37,6 @@ def configure(conf):
             local_vamp_lib = local_vamp_lib_amd64
         elif platform.machine() == 'x86_64':
             local_vamp_lib = local_vamp_lib_i686
-        conf.check(lib='cblas', uselib_store='CBLAS', mandatory=False)
     elif sys.platform == 'darwin':
         local_vamp_lib = local_vamp_lib_osx
     elif sys.platform == 'win32':
