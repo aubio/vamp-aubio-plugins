@@ -140,5 +140,6 @@ def dist(ctx):
     ctx.excl += ' **/**.tar.bz2'
     ctx.excl += ' contrib/**'
     ctx.excl += ' build/**'
+    ctx.excl += ' dist/**'
     ctx.excl += ' **/.travis.yml'
     ctx.excl += ' **/.appveyor.yml'
