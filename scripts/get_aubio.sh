@@ -12,7 +12,6 @@ then
   git clone https://github.com/aubio/aubio aubio || ( pushd aubio; git pull; popd )
   pushd aubio
 else
-  AUBIO_VERSION=0.4.4
   echo "using release 0.4.4"
   tarball=aubio-$AUBIO_VERSION.tar.bz2
   [ -f $tarball ] || wget https://aubio.org/pub/$tarball
