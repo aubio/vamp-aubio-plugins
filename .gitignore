@@ -13,3 +13,9 @@ waf
 contrib/
 build/
 dist/
+
+.lock-waf*
+.waf-*
+waf
+waflib
+build/
