@@ -2,7 +2,7 @@ diff --git a/scripts/get_aubio.sh b/scripts/get_aubio.sh
 index 9d42234..068d889 100755
 --- a/scripts/get_aubio.sh
 +++ b/scripts/get_aubio.sh
-@@ -25,7 +25,7 @@ git clone https://github.com/aubio/aubio aubio || ( pushd aubio; git pull; popd
+@@ -27,7 +27,7 @@ git clone https://github.com/aubio/aubio aubio || ( pushd aubio; git pull; popd
  #rm -rf aubio
  ./scripts/get_waf.sh
  #./waf distclean
