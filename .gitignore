@@ -11,3 +11,5 @@ libmain.so
 
 waf
 contrib/
+build/
+dist/
