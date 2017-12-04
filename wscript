@@ -43,9 +43,9 @@ def configure(conf):
     if sys.platform.startswith('linux'):
         if 'mingw' in conf.env.CXX[0]:
             local_vamp_lib = local_vamp_lib_mingw
-        elif platform.machine() == 'x86_64':
+        elif sys.maxsize > 2**32:
             local_vamp_lib = local_vamp_lib_amd64
-        elif platform.machine() == 'x86_64':
+        else:
             local_vamp_lib = local_vamp_lib_i686
     elif sys.platform == 'darwin':
         local_vamp_lib = local_vamp_lib_osx
